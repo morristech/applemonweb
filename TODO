@@ -1,13 +1,4 @@
-## HIGH PRIORITY
-
  - add comments to code
-
-load.py:
-
- - test all invoice and statement renders in load.py
-
-## LOW PRIORITY
-
  - warn if DocumentNo not sequential
  - remove authentication for admin site
 
