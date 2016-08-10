@@ -53,7 +53,8 @@ DATABASES = {
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/New_York'
 USE_I18N = False
-USE_L10N = False
+USE_L10N = True
+USE_THOUSAND_SEPARATOR = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
