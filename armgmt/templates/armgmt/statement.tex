@@ -1,0 +1,162 @@
+{% load humanize %}
+{% autoescape off %}
+\documentclass[american,letterpaper,10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{times}
+\usepackage{alltt}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{fancyhdr}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[pdfborder={0 0 0},backref=false,colorlinks=false]{hyperref}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+
+\hypersetup{pdftitle={Account Statement: {{ client.name }} },pdfauthor={Applemon Corporation}}
+
+\geometry{tmargin=0.75in,bmargin=1.5in,lmargin=0.5in,rmargin=0.5in,nomarginpar}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot[C]{Applemon Corporation\\
+151 South Mountain Rd, New City NY 10956-2316\\
+Phone: 845-634-0858 \qquad Fax: 845-634-7398\\
+Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+
+% don't break page at \\* followed by \nobreakhline or \nobreakcline
+% courtesy of http://tex.stackexchange.com/a/45271
+\makeatletter
+\newcommand\nobreakhline{%
+\multispan\LT@cols
+\unskip\leaders\hrule\@height\arrayrulewidth\hfill\\*}
+\newcommand\nobreakcline[1]{\@nobreakcline#1\@nil}%
+\def\@nobreakcline#1-#2\@nil{%
+  \omit
+  \@multicnt#1%
+  \advance\@multispan\m@ne
+  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
+  \@multicnt#2%
+  \advance\@multicnt-#1%
+  \advance\@multispan\@ne
+  \leaders\hrule\@height\arrayrulewidth\hfill\\*
+  \noalign{\vskip-\arrayrulewidth}}
+\makeatother
+
+\begin{document}
+\begin{multicols}{2}
+\begin{wrapfigure}{l}{0.85in}
+\includegraphics[width=0.7in]{% templatetag openbrace %}{{ logo_path }}{% templatetag closebrace %}
+\end{wrapfigure}
+\textbf{Please remit to:}
+\smallskip
+
+Applemon Corporation \\
+151 South Mountain Rd \\
+New City NY 10956-2316
+\begin{flushright}
+\textbf{\huge STATEMENT}
+\smallskip
+
+\begin{tabular}{c}
+\textbf{Statement Date} \\
+\midrule \midrule
+{{ date }} \\
+\end{tabular}
+\end{flushright}
+\end{multicols}
+
+\bigskip
+
+\textbf{Prepared for:} \medskip
+
+\bigskip
+
+\qquad \begin{minipage}[t]{5in}
+\small \begin{alltt}
+{{ client.address|upper }}
+\end{alltt}
+\end{minipage}
+
+\bigskip
+
+According to our records, the following invoices have outstanding balances.
+\vfill{}
+{ \renewcommand{\arraystretch}{1.6}
+\begin{longtable}{|l|r|rr|p{1in}|r|rr|r|rr|rr|}
+\hline
+\multicolumn{4}{|c|}{\textbf{Invoice}} &
+\multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Description}}} &
+\multicolumn{3}{c|}{\textbf{Payment}} &
+\multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Age}}} &
+\multicolumn{2}{c|}{\multirow{2}{0.47in}{\textbf{Invoice Balance}}} &
+\multicolumn{2}{c|}{\multirow{2}{0.51in}{\textbf{Running Balance}}} \\
+\cline{1-4} \cline{6-8}
+\textbf{No.} &
+\multicolumn{1}{c|}{\textbf{Date}} &
+\multicolumn{2}{c|}{\textbf{Amount}} &
+&
+\multicolumn{1}{c|}{\textbf{Date}} &
+\multicolumn{2}{c|}{\textbf{Amount}} &
+& & & & \\
+\hline \hline
+\endhead
+\multicolumn{13}{r}{(continued on next page)} \\ \endfoot
+\endlastfoot
+{% for e in entries %}
+\multirow{ {{ e.rows }} }{*}{ {{ e.no }} } &
+\multirow{ {{ e.rows }} }{*}{ {{ e.date }} } &
+\multirow{ {{ e.rows }} }{*}{\$} &
+\multirow{ {{ e.rows }} }{*}{  {{ e.amount|intcomma }} } &
+\footnotesize {{ e.name }} &
+{% if e.payments %}
+{{ e.payments.0.0 }} &
+\$ &
+{{ e.payments.0.1|intcomma }} &
+{% else %}
+\multicolumn{3}{c|}{} &
+{% endif %}
+\multirow{ {{ e.rows }} }{*}{ {{ e.age }} } &
+\multirow{ {{ e.rows }} }{*}{\$} &
+\multirow{ {{ e.rows }} }{*}{ {{ e.balance|intcomma }} } &
+\multirow{ {{ e.rows }} }{*}{\$} &
+\multirow{ {{ e.rows }} }{*}{ {{ e.running_balance|intcomma }} } \\*
+{% for p in e.payments|slice:"1:" %}
+\nobreakcline{6-8}
+ & & & & & {{ p.0 }} & \$ & {{ p.1|intcomma }} & & & & & \\*
+{% endfor %}
+\hline
+{% endfor %}
+\multicolumn{11}{r|}{\textbf{Total Balance}} &
+\$ &
+\multicolumn{1}{r}{\textbf{ {{ balances.total|intcomma }} }} \\
+\end{longtable}
+}
+\vfill{}
+\centering
+\begin{tabularx}{0.75\textwidth}{*4{>{\raggedleft}X}}
+\multicolumn{4}{c}{\Large \textbf{Aging Days}} \\
+\hline
+\multicolumn{1}{|c|}{\textbf{Over 90}} &
+\multicolumn{1}{c|}{\textbf{61-90}} &
+\multicolumn{1}{c|}{\textbf{31-60}} &
+\multicolumn{1}{c|}{\textbf{0-30}} \\
+\hline \midrule
+{{ balances.over90|intcomma }} & {{ balances.over60|intcomma }} & {{ balances.over30|intcomma }} & {{ balances.under30|intcomma }}
+\end{tabularx}
+\vfill{}
+\end{document}
+{% endautoescape %}

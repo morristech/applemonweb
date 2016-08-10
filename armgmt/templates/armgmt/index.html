@@ -1,0 +1,26 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<table>
+    <tr>
+        <th><a href="/admin/armgmt/client/">Clients</a></th>
+        <td><a href="/admin/armgmt/client/add">Add</a></td>
+    </tr>
+    <tr>
+        <th><a href="/admin/armgmt/project/">Projects</a></th>
+        <td><a href="/admin/armgmt/project/add">Add</a></td>
+    </tr>
+    <tr>
+        <th><a href="/admin/armgmt/invoice/">Invoices</a></th>
+        <td><a href="/wizard/">Add</a></td>
+    </tr>
+    <tr>
+        <th><a href="/admin/armgmt/payment/">Payments</a></th>
+        <td><a href="/admin/armgmt/payment/add">Add</a></td>
+    </tr>
+    <tr>
+        <th><a href="/admin/armgmt/action">Actions</a></th>
+        <td><a href="/admin/armgmt/action/add">Add</a></td>
+    </tr>
+</table>
+{% endblock %}

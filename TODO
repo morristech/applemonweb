@@ -1,0 +1,24 @@
+## HIGH PRIORITY
+
+ - add comments to code
+
+load.py:
+
+ - test all invoice and statement renders in load.py
+
+## LOW PRIORITY
+
+ - warn if DocumentNo not sequential
+ - remove authentication for admin site
+
+bug fixes:
+
+ - 400 error when adding Action from ServiceInline in InvoiceAdmin
+
+models.py:
+
+ - don't alter custom DocumentModel fields on every migration
+
+views.py:
+
+ - class-based views

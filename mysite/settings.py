@@ -1,0 +1,64 @@
+import json
+import os
+
+from django.utils.crypto import get_random_string
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+# Load the secret key if possible, otherwise generate one.
+secret_filename = os.path.join(BASE_DIR, 'secrets.json')
+try:
+    secrets = json.load(file(secret_filename))
+    SECRET_KEY = secrets['SECRET_KEY']
+except Exception:
+    SECRET_KEY = get_random_string(50)
+    secrets = {'SECRET_KEY': SECRET_KEY}
+    json.dump(secrets, file(secret_filename, 'w'))
+
+DEBUG = True
+TEMPLATE_DEBUG = True
+
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+#    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'django.contrib.formtools',
+    'armgmt'
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+ROOT_URLCONF = 'mysite.urls'
+
+WSGI_APPLICATION = 'mysite.wsgi.application'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'mysite.db')
+    }
+}
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'America/New_York'
+USE_I18N = False
+USE_L10N = False
+USE_TZ = True
+
+STATIC_URL = '/static/'
+
+LOGIN_URL = '/admin/login/'
+LOGOUT_URL = '/admin/logout/'

@@ -1,0 +1,117 @@
+{% load humanize %}
+{% autoescape off %}
+\documentclass[american,letterpaper,12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{times}
+\usepackage{alltt}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{fancyhdr}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage[pdfborder={0 0 0},backref=false,colorlinks=false]{hyperref}
+\usepackage{wrapfig}
+
+\geometry{verbose,tmargin=0.75in,bmargin=1.5in,lmargin=0.5in,rmargin=0.5in}
+\pagestyle{fancy}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\date{ {{ invoice.date }} }
+\hypersetup{pdftitle={Invoice {{ invoice.no }} },pdfauthor={Applemon Corporation}}
+
+\fancyhead{}
+\fancyfoot[C]{Applemon Corporation\\ 151 South Mountain Rd, New City NY 10956-2316\\ Phone: 845-634-0858 \qquad Fax: 845-634-7398\\ Page \thepage\ of \pageref{LastPage}}
+
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcounter{rownum}
+\setcounter{rownum}{0}
+
+\begin{document}
+
+\begin{multicols}{2}
+
+\begin{wrapfigure}{l}{0.7in}
+\includegraphics[width=0.7in]{% templatetag openbrace %}{{ logo_path }}{% templatetag closebrace %}
+\end{wrapfigure}
+
+\textbf{Please remit to:}
+\smallskip
+
+Applemon Corporation\\
+151 South Mountain Rd\\
+New City NY 10956-2316
+
+\begin{flushright}
+\textbf{\huge INVOICE}
+
+\smallskip
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Invoice No.} & \textbf{Invoice Date} & \textbf{Terms} \tabularnewline
+\hline
+\textbf{ {{ invoice.no }} } & \textbf{ {{ invoice.date }} } & Net 30 days \tabularnewline
+\hline
+\end{tabular}
+
+\end{flushright}
+
+\end{multicols}
+
+\textbf{Billed to:}
+
+\medskip \bigskip \bigskip \qquad
+\begin{minipage}[t]{5in}
+\small \begin{alltt}
+{{ invoice.client.address|upper }}
+\end{alltt}
+\end{minipage}
+
+\bigskip \bigskip
+Re:\quad
+\begin{minipage}[t]{6.5in}
+\begin{alltt}\normalfont
+{{ invoice.description }}
+{{ invoice.project.description }}
+Applemon Project No. {{ invoice.project.no }}
+\end{alltt}
+\end{minipage}
+
+\medskip
+{
+\renewcommand{\arraystretch}{1.5}
+\begin{longtable}{|r|>{\raggedright}p{3.5in}|rl|rr||rr|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Item}} & \multicolumn{1}{|c|}{\textbf{Description}} & \multicolumn{2}{|c|}{\textbf{Quantity}} & \multicolumn{2}{|c||}{\textbf{Unit Cost}} & \multicolumn{2}{c|}{\textbf{Line Total}} \tabularnewline
+\toprule \hline \endhead
+\multicolumn{8}{r}{(continued on next page)} \tabularnewline \endfoot
+\endlastfoot
+{% for s in services %}
+\addtocounter{rownum}{1}\arabic{rownum} & {{ s.description }} &
+{% if s.action %}
+{{ s.qty|intcomma }} & {{ s.action }}{{ s.qty|pluralize }} &
+{% elif s.qty == 1 %}
+\multicolumn{2}{c|}{-} &
+{% else %}
+\multicolumn{2}{c|}{ {{ s.qty }} } &
+{% endif %}
+\$ & {{ s.unit_price|intcomma }} & \$ & {{ s.amount|intcomma }} \tabularnewline
+\hline
+{% endfor %}
+\bottomrule
+\multicolumn{6}{|r||}{\textbf{Total Invoice}} & \textbf{\$} & \textbf{ {{ invoice.amount|intcomma }} } \tabularnewline
+\hline
+\end{longtable}
+}
+
+\end{document}
+{% endautoescape %}
