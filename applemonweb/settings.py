@@ -41,14 +41,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'mysite.urls'
-
-WSGI_APPLICATION = 'mysite.wsgi.application'
+ROOT_URLCONF = 'applemonweb.urls'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'mysite.db')
+        'NAME': os.path.join(BASE_DIR, 'applemonweb.db')
     }
 }
 
