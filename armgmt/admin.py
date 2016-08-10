@@ -8,11 +8,9 @@ from forms import DocumentForm, ServiceForm
 
 
 # Customize admin site appearance.
-admin.AdminSite.site_header = "Invoicing"
-admin.AdminSite.site_title = "Invoicing"
-admin.AdminSite.index_title = "Invoicing"
-admin.AdminSite.index_template = 'armgmt/index.html'
-admin.AdminSite.app_index_template= 'armgmt/index.html'
+admin.AdminSite.site_header = "Applemon"
+admin.AdminSite.site_title = "Admin"
+admin.AdminSite.index_title = "Applemon DB"
 
 # Do not manage groups in admin site.
 admin.site.unregister(Group)
