@@ -3,6 +3,7 @@ from decimal import Decimal
 from numbers import Number
 
 from django import forms
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -293,3 +294,58 @@ class Payment(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.invoice, self.amount)
+
+
+class Task(models.Model):
+    assignee = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                 related_name='tasks_assigned')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               related_name='tasks_authored')
+    date_opened = models.DateField(default=date.today)
+    date_due = models.DateField(null=True, blank=True)
+    date_closed = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=8, default='new', choices=[
+        ('new', "New"),
+        ('open', "Open"),
+        ('done', "Done"),
+        ('archived', "Archived"),
+    ])
+    name = models.CharField(max_length=127)
+    content = models.TextField(blank=True)
+    client = models.ForeignKey(Client, null=True, blank=True)
+    project = models.ForeignKey(Project, null=True, blank=True)
+    invoice = models.ForeignKey(Invoice, null=True, blank=True)
+
+    def clean(self):
+        if self.project and not self.client:
+            # Fill in client from project.
+            self.client = self.project.client
+        if self.invoice:
+            if not self.client:
+                # Fill in client from invoice.
+                self.client = self.invoice.client
+            if not self.project:
+                # Fill in project from invoice.
+                self.project = self.invoice.project
+        if self.date_closed and self.status not in ['done', 'archived']:
+            raise ValidationError(
+                "Closed task must be marked done or archived."
+            )
+        if self.date_due and self.date_due < self.date_opened:
+            raise ValidationError("Task must be due after date opened.")
+        if self.date_closed and self.date_closed < self.date_opened:
+            raise ValidationError("Task must be closed after date opened.")
+        if self.status in ['done', 'archived']:
+            raise ValidationError("Done task must record date closed (today?)")
+        if (self.client and self.project
+                and self.client != self.project.client):
+            raise ValidationError("Client and project must match.")
+        if (self.client and self.invoice
+                and self.client != self.invoice.client):
+            raise ValidationError("Client and invoice must match")
+        if (self.project and self.invoice
+                and self.project != self.invoice.project):
+            raise ValidationError("Project and invoice must match")
+
+    def __str__(self):
+        return self.name

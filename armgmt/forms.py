@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Max
 
-from armgmt.models import DocumentNo, Document, Client, Project, Invoice
+from armgmt.models import DocumentNo, Document, Client, Project, Invoice, Task
 
 
 class DocumentForm(forms.ModelForm):
@@ -75,3 +75,49 @@ class InvoiceForm2(DocumentForm):
     class Meta:
         model = Invoice
         fields = ['project']
+
+
+class TaskForm(forms.ModelForm):
+    """Form for Tasks.
+
+    Modifications of this model form:
+
+     - Limits client drop-down options to active clients.
+     - Limits project/invoice drop-down options to the client's.
+     - Limits invoice drop-down options to the project's invoices.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+
+        # Fill in author with current user.
+        if hasattr(self, 'current_user') and self.current_user:
+            self.fields['author'].initial = self.current_user
+
+        # Limit client drop-down options to active clients.
+        if 'client' in self.fields:
+            self.fields['client'].queryset = \
+                Client.objects.filter(active=True)
+
+        # Limit project and invoice drop-down options to client's
+        # projects and invoices.
+        if hasattr(self.instance, 'client') and self.instance.client:
+            client = self.instance.client
+            if 'project' in self.fields:
+                self.fields['project'].queryset = \
+                    Project.objects.filter(client=client)
+            if 'invoice' in self.fields:
+                self.fields['invoice'].queryset = \
+                    Invoice.objects.filter(client=client)
+
+        # Limit invoice drop-down options to project's invoices.
+        if 'invoice' in self.fields and hasattr(self.instance, 'project'):
+            project = self.instance.project
+            if project:
+                self.fields['invoice'].queryset = \
+                    Invoice.objects.filter(project=project)
+
+    class Meta:
+        model = Task
+        exclude = []

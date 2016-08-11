@@ -5,8 +5,8 @@ from django.utils.safestring import mark_safe
 
 from armgmt.models import (Client, Project,
                            Invoice, InvoiceLineItem, InvoiceLineAction,
-                           Payment)
-from armgmt.forms import DocumentForm, InvoiceLineItemForm
+                           Payment, Task)
+from armgmt.forms import DocumentForm, InvoiceLineItemForm, TaskForm
 
 
 # Customize admin site appearance.
@@ -57,9 +57,23 @@ class PaymentInline(admin.TabularInline):
     extra = 0
 
 
+class TaskInline(admin.TabularInline):
+    model = Task
+    form = TaskForm
+    extra = 0
+    fields = ['name', 'assignee', 'author', 'date_opened', 'status',
+              'client', 'project', 'invoice', 'Edit']
+    readonly_fields = ['Edit']
+
+    def Edit(self, instance):
+        """Link Task Name to TaskAdmin."""
+        url = reverse('admin:armgmt_task_change', args=(instance.id,))
+        return mark_safe('<a href="%s">Edit</a>' % url)
+
+
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    inlines = [ProjectInline, InvoiceInline]
+    inlines = [TaskInline, ProjectInline, InvoiceInline]
     list_display = ['name', 'owed']
     list_filter = ['active']
     readonly_fields = ['billed', 'paid', 'owed']
@@ -94,7 +108,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(DocumentAdmin):
-    inlines = [InvoiceInline]
+    inlines = [TaskInline, InvoiceInline]
     list_display = ['client', 'no', 'start_date', 'end_date',
                     'name', 'amount']
     readonly_fields = ['amount']
@@ -103,7 +117,7 @@ class ProjectAdmin(DocumentAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(DocumentAdmin):
-    inlines = [InvoiceLineItemInline, PaymentInline]
+    inlines = [TaskInline, InvoiceLineItemInline, PaymentInline]
     list_display = ['is_paid', 'client', 'no', 'date', 'name', 'amount',
                     'paid']
     readonly_fields = ['is_paid', 'amount', 'paid', 'balance']
@@ -122,3 +136,22 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ['invoice__client']
     ordering = ['-invoice', '-date']
     date_hierarchy = 'date'
+
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    form = TaskForm
+    list_display = ['assignee', 'name', 'status',
+                    'client', 'project', 'invoice', 'date_due', 'date_opened']
+    list_display_links = ['name']
+    list_filter = ['status', 'assignee', 'author']
+    search_fields = ['name', 'content', 'status',
+                     'assignee__username', 'author__username']
+    ordering = ['date_due', 'date_opened']
+    date_hierarchy = 'date_opened'
+
+    def get_form(self, request, *args, **kwargs):
+        """Override get_form to pass request.user to form."""
+        form = super(TaskAdmin, self).get_form(request, *args, **kwargs)
+        form.current_user = request.user
+        return form
