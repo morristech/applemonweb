@@ -21,10 +21,12 @@ mapping = {'1':        None,
            'N/A':      None,
            'Service':  'service',
            'services': 'service',
+           'Services': 'service',
            'sets':     'set',
            'Set':      'set',
            'Sets':     'set',
-           'visits':   'visit'}
+           'Visit':    'visit',
+           'visits':   'visit',}
 
 
 django.setup()
