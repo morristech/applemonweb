@@ -77,7 +77,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ['name', 'owed']
     list_filter = ['active']
     readonly_fields = ['billed', 'paid', 'owed']
-    search_fields = ['name', 'notes']
+    search_fields = ['name', 'address', 'notes']
 
     def changelist_view(self, request, extra_context=None):
         """Filter only active clients by default."""
@@ -96,7 +96,7 @@ class DocumentAdmin(admin.ModelAdmin):
     list_display_links = ['no']
     list_filter = ['client']
     list_per_page = 100
-    search_fields = ['no', 'name', 'content', 'client__name']
+    search_fields = ['no', 'name', 'content', 'client__name', 'client__notes']
 
     def get_search_results(self, request, queryset, search_term):
         # TODO: hack to treat DocumentNo as an integer by removing hyphen.
@@ -113,7 +113,8 @@ class ProjectAdmin(DocumentAdmin):
                     'name', 'amount']
     readonly_fields = ['amount']
     date_hierarchy = 'start_date'
-
+    search_fields = DocumentAdmin.search_fields + \
+        ['task__name', 'task__content', 'invoice__name', 'invoice__content']
 
 @admin.register(Invoice)
 class InvoiceAdmin(DocumentAdmin):
@@ -122,6 +123,9 @@ class InvoiceAdmin(DocumentAdmin):
                     'paid']
     readonly_fields = ['is_paid', 'amount', 'paid', 'balance']
     date_hierarchy = 'date'
+    search_fields = DocumentAdmin.search_fields + \
+        ['project__name', 'project__content', 'task__name', 'task__content',
+         'invoicelineitem__content', 'payment__notes']
 
 
 @admin.register(InvoiceLineAction)
@@ -146,7 +150,10 @@ class TaskAdmin(admin.ModelAdmin):
     list_display_links = ['name']
     list_filter = ['status', 'assignee', 'author']
     search_fields = ['name', 'content', 'status',
-                     'assignee__username', 'author__username']
+                     'assignee__username', 'author__username',
+                     'client__name', 'client__notes',
+                     'project__name', 'project__content',
+                     'invoice__name', 'invoice__content']
     ordering = ['date_due', 'date_opened']
     date_hierarchy = 'date_opened'
 
