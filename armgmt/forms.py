@@ -28,14 +28,14 @@ class DocumentForm(forms.ModelForm):
         # Limit client drop-down options to active clients.
         if 'client' in self.fields:
             self.fields['client'].queryset = \
-            Client.objects.filter(active=True)
+                Client.objects.filter(active=True)
 
         # Limit project drop-down options to client's projects.
         if 'project' in self.fields and hasattr(self.instance, 'client'):
             client = self.instance.client
             if client:
                 self.fields['project'].queryset = \
-                Project.objects.filter(client=client)
+                    Project.objects.filter(client=client)
 
     class Meta:
         model = Document
@@ -70,7 +70,7 @@ class InvoiceForm2(DocumentForm):
         # Limit project drop-down options to client's projects.
         if client:
             self.fields['project'].queryset = \
-            Project.objects.filter(client=client)
+                Project.objects.filter(client=client)
 
     class Meta:
         model = Invoice

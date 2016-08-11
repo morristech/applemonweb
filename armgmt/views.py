@@ -24,7 +24,9 @@ def index(request):
 @login_required
 def render_invoice(request, invoice_no):
     try:
-        invoice = Invoice.objects.select_related().get(no=DocumentNo(invoice_no))
+        invoice = Invoice.objects.select_related().get(
+            no=DocumentNo(invoice_no)
+        )
         services = invoice.service_set.select_related('action').order_by(
                    'position', 'date').all()
     except (ValueError, Invoice.DoesNotExist):
@@ -72,16 +74,20 @@ def render_statement(request, client_name):
     balances = {}
     balances['total'] = client.owed()
     assert balances['total'] == running_balance, \
-        "Total balance %s must equal last running balance %s" % (client.owed(),
-            running_balance)
-    balances['over90'] = sum(e['balance'] for e in entries
-        if e['age'] > 90)
-    balances['over60'] = sum(e['balance'] for e in entries
-        if e['age'] > 60) - balances['over90']
-    balances['over30'] = sum(e['balance'] for e in entries
-        if e['age'] > 30) - balances['over90'] - balances['over60']
+        "Total balance %s must equal last running balance %s" % (
+            client.owed(),
+            running_balance,
+         )
+    balances['over90'] = (sum(e['balance'] for e in entries
+                          if e['age'] > 90))
+    balances['over60'] = (sum(e['balance'] for e in entries
+                          if e['age'] > 60) - balances['over90'])
+    balances['over30'] = (sum(e['balance'] for e in entries
+                          if e['age'] > 30) - balances['over90']
+                          - balances['over60'])
     balances['under30'] = (balances['total']
-        - balances['over90'] - balances['over60'] - balances['over30'])
+                           - balances['over90'] - balances['over60']
+                           - balances['over30'])
 
     context = {'date': today,
                'client': client,

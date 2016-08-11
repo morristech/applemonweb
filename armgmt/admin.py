@@ -65,12 +65,13 @@ class ClientAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         """Filter only active clients by default."""
-        if not 'active__exact' in request.GET:
+        if 'active__exact' not in request.GET:
             q = request.GET.copy()
             q['active__exact'] = 1
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(ClientAdmin, self).changelist_view(request,
+        return super(ClientAdmin, self).changelist_view(
+            request,
             extra_context=extra_context)
 
 
@@ -85,8 +86,9 @@ class DocumentAdmin(admin.ModelAdmin):
     def get_search_results(self, request, queryset, search_term):
         # TODO: hack to treat DocumentNo as an integer by removing hyphen.
         search_term = search_term.replace('-', '')
-        return super(DocumentAdmin, self
-            ).get_search_results(request, queryset, search_term)
+        return super(
+            DocumentAdmin, self
+        ).get_search_results(request, queryset, search_term)
 
 
 @admin.register(Project)

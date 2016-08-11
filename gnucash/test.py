@@ -18,11 +18,12 @@ output_dir = 'output'
 clients = Client.objects.all()
 invoices = Invoice.objects.all()
 
-# Work around required authentication with dummy request object.
-class Object(object):
+
+class DummyObject(object):
+    """Work around required authentication with dummy request object."""
     pass
-request = Object()
-request.user = Object()
+request = DummyObject()
+request.user = DummyObject()
 request.user.is_authenticated = lambda: True
 
 for client in clients:

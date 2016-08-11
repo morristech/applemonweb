@@ -28,7 +28,7 @@ mapping = {'1':        None,
            'Set':      'set',
            'Sets':     'set',
            'Visit':    'visit',
-           'visits':   'visit',}
+           'visits':   'visit'}
 
 
 for old_name, new_name in mapping.items():

@@ -146,7 +146,9 @@ class Client(models.Model):
     def paid(self):
         payment_set = Payment.objects.filter(invoice__client=self)
         service_set = Service.objects.filter(invoice__client=self)
-        old_service_set = service_set.filter(invoice__date__lt=date(2012, 9, 1))
+        old_service_set = service_set.filter(
+            invoice__date__lt=date(2012, 9, 1)
+        )
         return agg_total(payment_set) + agg_total(old_service_set)
 
     def owed(self):
@@ -221,7 +223,7 @@ class Invoice(Document):
 
     def clean(self):
         if (hasattr(self, 'client') and hasattr(self, 'project') and
-            self.client != self.project.client):
+                self.client != self.project.client):
             raise ValidationError(
                 "Project and invoice must have the same client.")
 
