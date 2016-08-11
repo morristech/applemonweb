@@ -173,7 +173,7 @@ class Document(models.Model):
     client = models.ForeignKey(Client)
     no = DocumentNoField(unique=True)
     name = models.CharField(max_length=127, blank=True)
-    description = models.TextField(blank=True)
+    content = models.TextField(blank=True)
 
     def __str__(self):
         if self.name:
@@ -249,7 +249,7 @@ class InvoiceLineItem(models.Model):
     position = models.PositiveSmallIntegerField()
     invoice = models.ForeignKey(Invoice)
     date = models.DateField(default=date.today)
-    description = models.TextField()
+    content = models.TextField()
     qty = models.DecimalField(max_digits=6, decimal_places=3)
     action = models.ForeignKey(InvoiceLineAction, null=True, blank=True)
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -275,7 +275,7 @@ class InvoiceLineItem(models.Model):
     is_billed.short_description = 'Billed?'
 
     def __str__(self):
-        return "%s: %s" % (self.invoice, self.description[:40])
+        return "%s: %s" % (self.invoice, self.content[:40])
 
     class Meta:
         ordering = ['invoice', 'position', 'date']

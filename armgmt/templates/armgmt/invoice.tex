@@ -80,8 +80,8 @@ New City NY 10956-2316
 Re:\quad
 \begin{minipage}[t]{6.5in}
 \begin{alltt}\normalfont
-{{ invoice.description }}
-{{ invoice.project.description }}
+{{ invoice.content }}
+{{ invoice.project.content }}
 Applemon Project No. {{ invoice.project.no }}
 \end{alltt}
 \end{minipage}
@@ -96,7 +96,7 @@ Applemon Project No. {{ invoice.project.no }}
 \multicolumn{8}{r}{(continued on next page)} \tabularnewline \endfoot
 \endlastfoot
 {% for l in line_items %}
-\addtocounter{rownum}{1}\arabic{rownum} & {{ l.description }} &
+\addtocounter{rownum}{1}\arabic{rownum} & {{ l.content }} &
 {% if l.action %}
 {{ l.qty|intcomma }} & {{ l.action }}{{ l.qty|pluralize }} &
 {% elif l.qty == 1 %}

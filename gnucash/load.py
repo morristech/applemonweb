@@ -110,7 +110,7 @@ for invc in gc.invoices.values():
             continue
         project = Project.objects.get(no=project_no)
         name = project.name
-        i = Invoice(client=client, date=date, no=no, description=notes,
+        i = Invoice(client=client, date=date, no=no, content=notes,
                     name=name, project=project)
         try:
             i.clean()
@@ -138,7 +138,7 @@ for invc in gc.invoices.values():
             qty = e['qty']
             unit_price = e['price']
             l = InvoiceLineItem(invoice=i, date=date,
-                                description=description, qty=qty,
+                                content=description, qty=qty,
                                 action=action, unit_price=unit_price,
                                 position=position)
             l.clean()

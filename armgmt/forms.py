@@ -45,11 +45,11 @@ class DocumentForm(forms.ModelForm):
 class InvoiceLineItemForm(forms.ModelForm):
     """Form for invoice line items.
 
-    The form hides position and makes the description text box smaller.
+    The form hides position and makes the content text box smaller.
 
     """
     position = forms.CharField(widget=forms.HiddenInput)
-    description = forms.CharField(label="Description", widget=forms.Textarea)
+    content = forms.CharField(widget=forms.Textarea)
 
 
 class InvoiceForm1(DocumentForm):

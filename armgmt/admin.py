@@ -81,7 +81,7 @@ class DocumentAdmin(admin.ModelAdmin):
     list_display_links = ['no']
     list_filter = ['client']
     list_per_page = 100
-    search_fields = ['no', 'name', 'description', 'client__name']
+    search_fields = ['no', 'name', 'content', 'client__name']
     form = DocumentForm
 
     def get_search_results(self, request, queryset, search_term):
