@@ -184,7 +184,7 @@ class Document(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['-no', '-date']
+        ordering = ['-no']
 
 
 class Project(Document):
