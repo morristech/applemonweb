@@ -81,16 +81,6 @@ class DocumentNo(tuple):
         """Subtract another number from document number suffix (num)."""
         return DocumentNo((self[0], self[1] - other))
 
-    def __coerce__(self, other):
-        """Coerce self and another object to integers."""
-        if other:
-            if isinstance(other, basestring):
-                # TODO: This is a workaround to coerce form data.
-                other = str2num(other, format=int)
-            return coerce(int(self), other)
-        else:
-            return self
-
     def __str__(self):
         """Print self as form yy-num."""
         return '%02d-%03d' % (self[0], self[1])

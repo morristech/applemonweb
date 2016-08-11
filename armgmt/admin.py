@@ -76,7 +76,6 @@ class ClientAdmin(admin.ModelAdmin):
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display_links = ['no']
-    #list_editable = ['name']
     list_filter = ['client']
     list_per_page = 100
     date_hierarchy = 'date'
@@ -107,23 +106,7 @@ class InvoiceAdmin(DocumentAdmin):
 
 @admin.register(Action)
 class ActionAdmin(admin.ModelAdmin):
-    #def get_model_perms(self, request):
-    #    return {}
-    #inlines = [ServiceInline]
     pass
-
-#@admin.register(Service)
-#class ServiceAdmin(admin.ModelAdmin):
-#    list_display = ['is_billed', 'invoice__client', 'invoice__project',
-#                    'invoice', 'date', 'description', 'amount']
-#    list_display_links = ['date', 'description']
-#    list_filter = ['invoice__client']
-#    list_per_page = 50
-#    ordering = ['-invoice', '-date', 'description']
-#    date_hierarchy = 'date'
-#    search_fields = ['description', 'action__name',
-#                     'invoice__project__name', 'invoice__project__description',
-#                     'invoice__name', 'invoice__description']
 
 
 @admin.register(Payment)
