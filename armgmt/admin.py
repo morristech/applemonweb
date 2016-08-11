@@ -21,7 +21,7 @@ admin.site.unregister(Group)
 class ProjectInline(admin.TabularInline):
     model = Project
     fields = ['No', 'start_date', 'end_date', 'name', 'amount']
-    readonly_fields = ['No', 'amount']
+    readonly_fields = fields
     extra = 0
     max_num = 0
 
@@ -34,7 +34,7 @@ class ProjectInline(admin.TabularInline):
 class InvoiceInline(admin.TabularInline):
     model = Invoice
     fields = ['No', 'date', 'name', 'amount', 'is_paid']
-    readonly_fields = ['No', 'amount', 'is_paid']
+    readonly_fields = fields
     extra = 0
     max_num = 0
 
@@ -92,11 +92,11 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 class DocumentAdmin(admin.ModelAdmin):
+    form = DocumentForm
     list_display_links = ['no']
     list_filter = ['client']
     list_per_page = 100
     search_fields = ['no', 'name', 'content', 'client__name']
-    form = DocumentForm
 
     def get_search_results(self, request, queryset, search_term):
         # TODO: hack to treat DocumentNo as an integer by removing hyphen.
