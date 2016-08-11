@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Max
 
-from models import DocumentNo, Document, Client, Project, Invoice
+from armgmt.models import DocumentNo, Document, Client, Project, Invoice
 
 
 class DocumentForm(forms.ModelForm):

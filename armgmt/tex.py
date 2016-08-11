@@ -37,7 +37,7 @@ def pdflatex(latex):
                                     stdin=PIPE, stdout=devnull, stderr=PIPE)
             stdout, stderr = process.communicate(latex)
         try:
-            with open(filename) as f:
+            with open(filename, 'rb') as f:
                 pdf = f.read()
         except IOError:
             if stderr:

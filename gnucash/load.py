@@ -66,7 +66,7 @@ for job in gc.jobs.values():
     year = 2000 + numbers[0]
     #num = numbers[1]
     assert year <= 2016 and year > 2005, "%s %s" % (job['id'], year)
-    date = datetime(year, 01, 01).date()
+    date = datetime(year, 1, 1).date()
     name = re.match('([ -]{0,1}\w+){0,12}',
             " ".join(job['name'].split()).strip()).group()
     notes = "\n".join([n.strip() for n in job['name'].split('\\\\')])
@@ -140,7 +140,7 @@ for invc in gc.invoices.values():
             s.save()
             position += 1
 
-with open(infile, 'rb') as f:
+with open(infile, 'r') as f:
     reader = csv.reader(f)
     for row in reader:
         number = row[0].strip().lower()

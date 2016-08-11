@@ -9,12 +9,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Load the secret key if possible, otherwise generate one.
 secret_filename = os.path.join(BASE_DIR, 'secrets.json')
 try:
-    secrets = json.load(file(secret_filename))
+    secrets = json.load(open(secret_filename))
     SECRET_KEY = secrets['SECRET_KEY']
 except Exception:
     SECRET_KEY = get_random_string(50)
     secrets = {'SECRET_KEY': SECRET_KEY}
-    json.dump(secrets, file(secret_filename, 'w'))
+    json.dump(secrets, open(secret_filename, 'w'))
 
 DEBUG = True
 TEMPLATE_DEBUG = True

@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from numbers import Number
 
 from django import forms
 from django.db import models
@@ -55,7 +56,7 @@ class DocumentNo(tuple):
             # Assume tuple is of form (yy, num).
             yy = int(value[0])
             num = int(value[1])
-        elif value >= 0 and value < 100000:
+        elif isinstance(value, Number) and value >= 0 and value < 100000:
             # Assume number is of form yynum.
             yy = int(value / 1000)
             num = int(value - yy * 1000)
@@ -109,10 +110,9 @@ def validate_DocumentNo(value, output=False):
         return d
 
 
-class DocumentNoField(models.IntegerField):
+class DocumentNoField(models.IntegerField, metaclass=models.SubfieldBase):
     """Custom Django model field with yy-num DocumentNo object."""
     description = "Document number of form yy-num"
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         if 'validators' not in kwargs:
@@ -159,8 +159,8 @@ class Client(models.Model):
         if self.owed() and not self.active:
             raise ValidationError("Cannot inactivate client with balance.")
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ['name']
@@ -173,11 +173,11 @@ class Document(models.Model):
     name = models.CharField(max_length=127, blank=True)
     description = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
-            return unicode("%s (%s)" % (self.no, self.name[:25]))
+            return "%s (%s)" % (self.no, self.name[:25])
         else:
-            return unicode(self.no)
+            return str(self.no)
 
     class Meta:
         abstract = True
@@ -228,8 +228,8 @@ class Invoice(Document):
 class Action(models.Model):
     name = models.CharField(unique=True, max_length=31)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ['name']
@@ -264,8 +264,8 @@ class Service(models.Model):
     is_billed.admin_order_field = 'invoice'
     is_billed.short_description = 'Billed?'
 
-    def __unicode__(self):
-        return unicode("%s: %s" % (self.invoice, self.description[:40]))
+    def __str__(self):
+        return "%s: %s" % (self.invoice, self.description[:40])
 
     class Meta:
         ordering = ['invoice', 'position', 'date']
@@ -281,5 +281,5 @@ class Payment(models.Model):
     def client(self):
         return self.invoice.client
 
-    def __unicode__(self):
-        return unicode("%s: %s" % (self.invoice, self.amount))
+    def __str__(self):
+        return "%s: %s" % (self.invoice, self.amount)

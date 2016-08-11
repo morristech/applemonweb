@@ -27,7 +27,7 @@ def render_invoice(request, invoice_no):
         invoice = Invoice.objects.select_related().get(no=DocumentNo(invoice_no))
         services = invoice.service_set.select_related('action').order_by(
                    'position', 'date').all()
-    except ValueError, Invoice.DoesNotExist:
+    except (ValueError, Invoice.DoesNotExist):
         raise Http404("Invoice %s not found." % invoice_no)
     dictionary = {'invoice': invoice,
                   'services': services,
@@ -49,7 +49,7 @@ def render_statement(request, client_name):
     entries = []
     invoice_set = client.invoice_set.prefetch_related('payment_set').all()
     for invoice in invoice_set.order_by('no'):
-	if invoice.balance:
+        if invoice.balance:
             e = {}
             for attr in ['no', 'amount', 'name', 'balance']:
                 e[attr] = getattr(invoice, attr)

@@ -3,8 +3,8 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
-from models import Client, Project, Invoice, Action, Service, Payment
-from forms import DocumentForm, ServiceForm
+from armgmt.models import Client, Project, Invoice, Action, Service, Payment
+from armgmt.forms import DocumentForm, ServiceForm
 
 
 # Customize admin site appearance.
@@ -65,7 +65,7 @@ class ClientAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         """Filter only active clients by default."""
-        if not request.GET.has_key('active__exact'):
+        if not 'active__exact' in request.GET:
             q = request.GET.copy()
             q['active__exact'] = 1
             request.GET = q
