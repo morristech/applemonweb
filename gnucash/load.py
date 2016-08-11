@@ -73,7 +73,8 @@ for job in gc.jobs.values():
     name = re.match('([ -]{0,1}\w+){0,12}',
             " ".join(job['name'].split()).strip()).group()
     notes = "\n".join([n.strip() for n in job['name'].split('\\\\')])
-    p = Project(client=client, date=date, no=no, name=name, description=notes)
+    p = Project(client=client, start_date=date, no=no, name=name,
+                description=notes)
     p.clean()
     p.save()
 

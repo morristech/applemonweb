@@ -20,7 +20,7 @@ admin.site.unregister(Group)
 
 class ProjectInline(admin.TabularInline):
     model = Project
-    fields = ['No', 'date', 'name', 'amount']
+    fields = ['No', 'start_date', 'end_date', 'name', 'amount']
     readonly_fields = ['No', 'amount']
     extra = 0
     max_num = 0
@@ -81,7 +81,6 @@ class DocumentAdmin(admin.ModelAdmin):
     list_display_links = ['no']
     list_filter = ['client']
     list_per_page = 100
-    date_hierarchy = 'date'
     search_fields = ['no', 'name', 'description', 'client__name']
     form = DocumentForm
 
@@ -96,8 +95,10 @@ class DocumentAdmin(admin.ModelAdmin):
 @admin.register(Project)
 class ProjectAdmin(DocumentAdmin):
     inlines = [InvoiceInline]
-    list_display = ['client', 'no', 'date', 'name', 'amount']
+    list_display = ['client', 'no', 'start_date', 'end_date',
+                    'name', 'amount']
     readonly_fields = ['amount']
+    date_hierarchy = 'start_date'
 
 
 @admin.register(Invoice)
@@ -106,6 +107,7 @@ class InvoiceAdmin(DocumentAdmin):
     list_display = ['is_paid', 'client', 'no', 'date', 'name', 'amount',
                     'paid']
     readonly_fields = ['is_paid', 'amount', 'paid', 'balance']
+    date_hierarchy = 'date'
 
 
 @admin.register(InvoiceLineAction)

@@ -172,7 +172,6 @@ class Client(models.Model):
 class Document(models.Model):
     client = models.ForeignKey(Client)
     no = DocumentNoField(unique=True)
-    date = models.DateField(default=date.today)
     name = models.CharField(max_length=127, blank=True)
     description = models.TextField(blank=True)
 
@@ -188,12 +187,20 @@ class Document(models.Model):
 
 
 class Project(Document):
+    start_date = models.DateField(default=date.today)
+    end_date = models.DateField(null=True, blank=True)
+
     def amount(self):
         invoice_set = InvoiceLineItem.objects.filter(invoice__project=self)
         return agg_total(invoice_set)
 
+    def clean(self):
+        if self.end_date and self.start_date > self.end_date:
+            raise ValidationError("Project start date must precede end date.")
+
 
 class Invoice(Document):
+    date = models.DateField(default=date.today)
     project = models.ForeignKey(Project)
 
     @property
