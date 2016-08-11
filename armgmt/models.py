@@ -117,7 +117,8 @@ class DocumentNoField(models.Field):
     def __init__(self, *args, **kwargs):
         if 'validators' not in kwargs:
             kwargs['validators'] = []
-        kwargs['validators'].append(validate_DocumentNo)
+        if validate_DocumentNo not in kwargs['validators']:
+            kwargs['validators'].append(validate_DocumentNo)
         super(DocumentNoField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
@@ -135,7 +136,8 @@ class DocumentNoField(models.Field):
     def formfield(self, **kwargs):
         if 'validators' not in kwargs:
             kwargs['validators'] = []
-        kwargs['validators'].append(validate_DocumentNo)
+        if validate_DocumentNo not in kwargs['validators']:
+            kwargs['validators'].append(validate_DocumentNo)
         kwargs['form_class'] = forms.CharField
         kwargs['max_length'] = 6
         return super(DocumentNoField, self).formfield(**kwargs)

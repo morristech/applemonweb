@@ -6,10 +6,6 @@ bug fixes:
 
  - 400 error when adding Action from ServiceInline in InvoiceAdmin
 
-models.py:
-
- - don't alter custom DocumentModel fields on every migration
-
 views.py:
 
  - class-based views
