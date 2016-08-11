@@ -8,6 +8,8 @@ import django
 curpath = os.path.dirname(__file__)
 sys.path.append(os.path.join(curpath, '..'))
 
+django.setup()
+
 from armgmt.models import Action
 
 
@@ -28,8 +30,6 @@ mapping = {'1':        None,
            'Visit':    'visit',
            'visits':   'visit',}
 
-
-django.setup()
 
 for old_name, new_name in mapping.items():
     try:

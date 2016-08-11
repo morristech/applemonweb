@@ -1,9 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from armgmt import views
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Redirect home page to admin site.
     url(r'^$', views.index, name='index'),
     # Render invoice at /invoice/YY-NUM.
@@ -12,4 +12,4 @@ urlpatterns = patterns('',
     url(r'^statement/(.*)', views.render_statement, name='statement'),
     # Create invoice from wizard.
     url(r'^wizard/$', views.InvoiceWizard.as_view(), name='wizard'),
-)
+]

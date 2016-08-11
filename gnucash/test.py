@@ -8,12 +8,13 @@ import django
 curpath = os.path.dirname(__file__)
 sys.path.append(os.path.join(curpath, '..'))
 
+django.setup()
+
 from armgmt.models import Client, Invoice
 from armgmt.views import render_statement, render_invoice
 
 
 output_dir = 'output'
-django.setup()
 clients = Client.objects.all()
 invoices = Invoice.objects.all()
 

@@ -13,6 +13,8 @@ curpath = os.path.dirname(__file__)
 sys.path.append(os.path.join(curpath, '..'))
 sys.path.append(os.path.join(curpath, '../../bin'))
 
+django.setup()
+
 from gcinvoice import Gcinvoice
 from armgmt.models import Client, DocumentNo, Project, Invoice, Service, Action, Payment
 
@@ -29,7 +31,6 @@ def str2date(text):
     return date
 
 
-django.setup()
 gc = Gcinvoice()
 gc.parse(gcfile)
 

@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 
 
 def render_latex(request, template, dictionary, filename):
-    latex = render_to_string(template, dictionary=dictionary)
+    latex = render_to_string(template, dictionary)
     pdf = pdflatex(latex)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=%s' % filename

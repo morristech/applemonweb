@@ -3,10 +3,10 @@ from decimal import Decimal
 import os
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from formtools.wizard.views import SessionWizardView
 
 from armgmt.forms import InvoiceForm1, InvoiceForm2
 from armgmt.models import Client, DocumentNo, Invoice

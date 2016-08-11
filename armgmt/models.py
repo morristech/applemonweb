@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 def agg_total(qset):
     """Sum amounts in a QuerySet of services or payments."""
     if qset.model is Service:
-        agg = models.Sum('unit_price', field='qty*unit_price')
+        agg = models.Sum(models.F('qty') * models.F('unit_price'))
     elif qset.model is Payment:
         agg = models.Sum('amount')
     total = qset.aggregate(total=agg)['total']
@@ -110,7 +110,7 @@ def validate_DocumentNo(value, output=False):
         return d
 
 
-class DocumentNoField(models.IntegerField, metaclass=models.SubfieldBase):
+class DocumentNoField(models.Field):
     """Custom Django model field with yy-num DocumentNo object."""
     description = "Document number of form yy-num"
 
@@ -120,8 +120,17 @@ class DocumentNoField(models.IntegerField, metaclass=models.SubfieldBase):
         kwargs['validators'].append(validate_DocumentNo)
         super(DocumentNoField, self).__init__(*args, **kwargs)
 
+    def get_internal_type(self):
+        return 'IntegerField'
+
     def to_python(self, value):
         return validate_DocumentNo(value, output=True)
+
+    def from_db_value(self, value, expression, connection, context):
+        return str(self.to_python(value))
+
+    def get_prep_value(self, value):
+        return int(self.to_python(value))
 
     def formfield(self, **kwargs):
         if 'validators' not in kwargs:
