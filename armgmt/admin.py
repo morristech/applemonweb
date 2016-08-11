@@ -3,8 +3,10 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
-from armgmt.models import Client, Project, Invoice, Action, Service, Payment
-from armgmt.forms import DocumentForm, ServiceForm
+from armgmt.models import (Client, Project,
+                           Invoice, InvoiceLineItem, InvoiceLineAction,
+                           Payment)
+from armgmt.forms import DocumentForm, InvoiceLineItemForm
 
 
 # Customize admin site appearance.
@@ -42,9 +44,9 @@ class InvoiceInline(admin.TabularInline):
         return mark_safe("<a href='%s'>%s</a>" % (url, instance.no))
 
 
-class ServiceInline(admin.TabularInline):
-    model = Service
-    form = ServiceForm
+class InvoiceLineItemInline(admin.TabularInline):
+    model = InvoiceLineItem
+    form = InvoiceLineItemForm
     readonly_fields = ['amount']
     sortable_field_name = 'position'
     extra = 0
@@ -100,14 +102,14 @@ class ProjectAdmin(DocumentAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(DocumentAdmin):
-    inlines = [ServiceInline, PaymentInline]
+    inlines = [InvoiceLineItemInline, PaymentInline]
     list_display = ['is_paid', 'client', 'no', 'date', 'name', 'amount',
                     'paid']
     readonly_fields = ['is_paid', 'amount', 'paid', 'balance']
 
 
-@admin.register(Action)
-class ActionAdmin(admin.ModelAdmin):
+@admin.register(InvoiceLineAction)
+class InvoiceLineActionAdmin(admin.ModelAdmin):
     pass
 
 

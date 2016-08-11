@@ -42,8 +42,8 @@ class DocumentForm(forms.ModelForm):
         exclude = []
 
 
-class ServiceForm(forms.ModelForm):
-    """Form for Services.
+class InvoiceLineItemForm(forms.ModelForm):
+    """Form for invoice line items.
 
     The form hides position and makes the description text box smaller.
 

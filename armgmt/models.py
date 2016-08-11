@@ -9,8 +9,8 @@ from django.core.urlresolvers import reverse
 
 
 def agg_total(qset):
-    """Sum amounts in a QuerySet of services or payments."""
-    if qset.model is Service:
+    """Sum amounts in a QuerySet of invoice line items or payments."""
+    if qset.model is InvoiceLineItem:
         agg = models.Sum(models.F('qty') * models.F('unit_price'))
     elif qset.model is Payment:
         agg = models.Sum('amount')
@@ -140,16 +140,16 @@ class Client(models.Model):
     active = models.BooleanField(default=True)
 
     def billed(self):
-        service_set = Service.objects.filter(invoice__client=self)
-        return agg_total(service_set)
+        invoice_set = InvoiceLineItem.objects.filter(invoice__client=self)
+        return agg_total(invoice_set)
 
     def paid(self):
         payment_set = Payment.objects.filter(invoice__client=self)
-        service_set = Service.objects.filter(invoice__client=self)
-        old_service_set = service_set.filter(
+        invoice_set = InvoiceLineItem.objects.filter(invoice__client=self)
+        old_invoice_set = invoice_set.filter(
             invoice__date__lt=date(2012, 9, 1)
         )
-        return agg_total(payment_set) + agg_total(old_service_set)
+        return agg_total(payment_set) + agg_total(old_invoice_set)
 
     def owed(self):
         return self.billed() - self.paid()
@@ -189,8 +189,8 @@ class Document(models.Model):
 
 class Project(Document):
     def amount(self):
-        service_set = Service.objects.filter(invoice__project=self)
-        return agg_total(service_set)
+        invoice_set = InvoiceLineItem.objects.filter(invoice__project=self)
+        return agg_total(invoice_set)
 
 
 class Invoice(Document):
@@ -198,12 +198,12 @@ class Invoice(Document):
 
     @property
     def amount(self):
-        return agg_total(self.service_set)
+        return agg_total(self.invoicelineitem_set)
 
     @property
     def paid(self):
         if self.date < date(2012, 9, 1):
-            return agg_total(self.service_set)
+            return agg_total(self.invoicelineitem_set)
         return agg_total(self.payment_set)
 
     @property
@@ -228,7 +228,7 @@ class Invoice(Document):
                 "Project and invoice must have the same client.")
 
 
-class Action(models.Model):
+class InvoiceLineAction(models.Model):
     name = models.CharField(unique=True, max_length=31)
 
     def __str__(self):
@@ -238,13 +238,13 @@ class Action(models.Model):
         ordering = ['name']
 
 
-class Service(models.Model):
+class InvoiceLineItem(models.Model):
     position = models.PositiveSmallIntegerField()
     invoice = models.ForeignKey(Invoice)
     date = models.DateField(default=date.today)
     description = models.TextField()
     qty = models.DecimalField(max_digits=6, decimal_places=3)
-    action = models.ForeignKey(Action, null=True, blank=True)
+    action = models.ForeignKey(InvoiceLineAction, null=True, blank=True)
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
 
     @property

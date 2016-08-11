@@ -27,12 +27,13 @@ def render_invoice(request, invoice_no):
         invoice = Invoice.objects.select_related().get(
             no=DocumentNo(invoice_no)
         )
-        services = invoice.service_set.select_related('action').order_by(
-                   'position', 'date').all()
+        line_items = (invoice.invoicelineitem_set.select_related('action')
+                      .order_by('position', 'date')
+                      .all())
     except (ValueError, Invoice.DoesNotExist):
         raise Http404("Invoice %s not found." % invoice_no)
     dictionary = {'invoice': invoice,
-                  'services': services,
+                  'line_items': line_items,
                   'logo_path': logo_path}
     filename = 'invoice-%s.pdf' % str(invoice.no)
     return render_latex(request, 'armgmt/invoice.tex', dictionary, filename)

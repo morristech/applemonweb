@@ -16,7 +16,8 @@ sys.path.append(os.path.join(curpath, '../../bin'))
 django.setup()
 
 from gcinvoice import Gcinvoice
-from armgmt.models import Client, DocumentNo, Project, Invoice, Service, Action, Payment
+from armgmt.models import (Client, DocumentNo, Project, Invoice,
+                           InvoiceLineItem, InvoiceLineAction, Payment)
 
 gcfile = os.path.join(curpath, '../../accounting.gnucash')
 infile = os.path.join(curpath, '../../payments.csv')
@@ -34,7 +35,8 @@ def str2date(text):
 gc = Gcinvoice()
 gc.parse(gcfile)
 
-for obj in [Client, Project, Invoice, Service, Action, Payment]:
+for obj in [Client, Project, Invoice, InvoiceLineItem, InvoiceLineAction,
+            Payment]:
     obj.objects.all().delete()
 
 for customer in gc.customers.values():
@@ -118,11 +120,11 @@ for invc in gc.invoices.values():
         position = 0
         for e in invc['entries']:
             if e['action']:
-                qset = Action.objects.filter(name=e['action'].strip())
+                qset = InvoiceLineAction.objects.filter(name=e['action'].strip())
                 if qset:
                     action = qset[0]
                 else:
-                    action = Action(name=e['action'].strip())
+                    action = InvoiceLineAction(name=e['action'].strip())
                     action.clean()
                     action.save()
             else:
@@ -134,11 +136,12 @@ for invc in gc.invoices.values():
                 description = ''
             qty = e['qty']
             unit_price = e['price']
-            s = Service(invoice=i, date=date,
-                        description=description, qty=qty, action=action,
-                        unit_price=unit_price, position=position)
-            s.clean()
-            s.save()
+            l = InvoiceLineItem(invoice=i, date=date,
+                                description=description, qty=qty,
+                                action=action, unit_price=unit_price,
+                                position=position)
+            l.clean()
+            l.save()
             position += 1
 
 with open(infile, 'r') as f:

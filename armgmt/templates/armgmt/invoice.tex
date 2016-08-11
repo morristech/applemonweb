@@ -95,16 +95,16 @@ Applemon Project No. {{ invoice.project.no }}
 \toprule \hline \endhead
 \multicolumn{8}{r}{(continued on next page)} \tabularnewline \endfoot
 \endlastfoot
-{% for s in services %}
-\addtocounter{rownum}{1}\arabic{rownum} & {{ s.description }} &
-{% if s.action %}
-{{ s.qty|intcomma }} & {{ s.action }}{{ s.qty|pluralize }} &
-{% elif s.qty == 1 %}
+{% for l in line_items %}
+\addtocounter{rownum}{1}\arabic{rownum} & {{ l.description }} &
+{% if l.action %}
+{{ l.qty|intcomma }} & {{ l.action }}{{ l.qty|pluralize }} &
+{% elif l.qty == 1 %}
 \multicolumn{2}{c|}{-} &
 {% else %}
-\multicolumn{2}{c|}{ {{ s.qty }} } &
+\multicolumn{2}{c|}{ {{ l.qty }} } &
 {% endif %}
-\$ & {{ s.unit_price|intcomma }} & \$ & {{ s.amount|intcomma }} \tabularnewline
+\$ & {{ l.unit_price|intcomma }} & \$ & {{ l.amount|intcomma }} \tabularnewline
 \hline
 {% endfor %}
 \bottomrule

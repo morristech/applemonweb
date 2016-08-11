@@ -4,7 +4,8 @@
 
 bug fixes:
 
- - 400 error when adding Action from ServiceInline in InvoiceAdmin
+ - 400 error when adding InvoiceLineAction from InvoiceLineItemInline
+   in InvoiceAdmin
 
 views.py:
 
