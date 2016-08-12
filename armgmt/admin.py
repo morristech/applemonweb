@@ -116,6 +116,7 @@ class ProjectAdmin(DocumentAdmin):
     search_fields = DocumentAdmin.search_fields + \
         ['task__name', 'task__content', 'invoice__name', 'invoice__content']
 
+
 @admin.register(Invoice)
 class InvoiceAdmin(DocumentAdmin):
     inlines = [TaskInline, InvoiceLineItemInline, PaymentInline]
