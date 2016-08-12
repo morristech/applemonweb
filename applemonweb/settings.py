@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'formtools',
     'massadmin',
+    'explorer',
     'armgmt',
 ]
 
@@ -76,3 +77,6 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = '/admin/login/'
 LOGOUT_URL = '/admin/logout/'
+
+EXPLORER_DEFAULT_ROWS = 100
+EXPLORER_RECENT_QUERY_COUNT = 0
