@@ -28,6 +28,7 @@ mapping = {'1':        None,
            'Set':      'set',
            'Sets':     'set',
            'Visit':    'visit',
+           'Visits':   'visit',
            'visits':   'visit'}
 
 
