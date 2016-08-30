@@ -22,7 +22,7 @@ class DocumentForm(forms.ModelForm):
         if 'no' in self.fields:
             document = self.Meta.model
             max_document_no = document.objects.aggregate(Max('no'))['no__max']
-            if max_document_no:
+            if max_document_no and max_document_no != 'None':
                 self.fields['no'].initial = DocumentNo(max_document_no) + 1
 
         # Limit client drop-down options to active clients.
