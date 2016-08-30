@@ -20,6 +20,15 @@ if 'DEBUG' in secrets and secrets['DEBUG']:
     DEBUG = True
 ALLOWED_HOSTS = ['localhost']
 
+LOGGING = {
+    'version': 1,
+    'loggers': {
+        'django': {
+            'level': 'DEBUG',
+        }
+    }
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
