@@ -98,7 +98,7 @@ Applemon Project No. {{ invoice.project.no }}
 {% for l in line_items %}
 \addtocounter{rownum}{1}\arabic{rownum} & {{ l.content }} &
 {% if l.action %}
-{{ l.qty|intcomma }} & {{ l.action }}{{ l.qty|pluralize }} &
+{{ l.qty|floatformat:-2|intcomma }} & {{ l.action }}{{ l.qty|pluralize }} &
 {% elif l.qty == 1 %}
 \multicolumn{2}{c|}{-} &
 {% else %}
