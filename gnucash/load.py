@@ -11,7 +11,7 @@ import django
 
 curpath = os.path.dirname(__file__)
 sys.path.append(os.path.join(curpath, '..'))
-sys.path.append(os.path.join(curpath, '../../bin'))
+sys.path.append('.')
 
 django.setup()
 
@@ -19,8 +19,8 @@ from gcinvoice import Gcinvoice
 from armgmt.models import (Client, DocumentNo, Project, Invoice,
                            InvoiceLineItem, InvoiceLineAction, Payment)
 
-gcfile = os.path.join(curpath, '../../accounting.gnucash')
-infile = os.path.join(curpath, '../../payments.csv')
+gcfile = 'accounting.gnucash'
+infile = 'payments.csv'
 
 
 def str2date(text):
