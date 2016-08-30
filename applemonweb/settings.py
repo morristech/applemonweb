@@ -16,7 +16,9 @@ except Exception:
     secrets = {'SECRET_KEY': SECRET_KEY}
     json.dump(secrets, open(secret_filename, 'w'))
 
-DEBUG = True
+if 'DEBUG' in secrets and secrets['DEBUG']:
+    DEBUG = True
+ALLOWED_HOSTS = ['localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
