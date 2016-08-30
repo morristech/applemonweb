@@ -18,7 +18,8 @@ except Exception:
 
 if 'DEBUG' in secrets and secrets['DEBUG']:
     DEBUG = True
-ALLOWED_HOSTS = ['localhost']
+else:
+    ALLOWED_HOSTS = ['.applemon.com']
 
 LOGGING = {
     'version': 1,
