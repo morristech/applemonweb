@@ -74,7 +74,7 @@ for job in gc.jobs.values():
             " ".join(job['name'].split()).strip()).group()
     notes = "\n".join([n.strip() for n in job['name'].split('\\\\')])
     p = Project(client=client, start_date=date, no=no, name=name,
-                description=notes)
+                content=notes)
     p.clean()
     p.save()
 
