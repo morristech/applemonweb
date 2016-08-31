@@ -4,6 +4,9 @@ SELECT client.name client_name,
        substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) `no`,
        substr(project.no, 0, 3) || '-' || substr(project.no, 3) project_no,
        invoice.date,
+       cast(strftime('%Y', invoice.date) as integer) year,
+       cast(strftime('%m', invoice.date) as integer) month,
+       cast(strftime('%d', invoice.date) as integer) day,
        round(coalesce(amount, 0), 2) amount,
        round(coalesce(old_amount, 0) + coalesce(paid, 0), 2) paid,
        round(coalesce(amount, 0) - coalesce(old_amount, 0) - coalesce(paid, 0), 2) balance,
@@ -34,12 +37,18 @@ ORDER BY `no` ASC;
 DROP VIEW IF EXISTS "payments";
 CREATE VIEW "payments" AS
 SELECT payment.date,
+       cast(strftime('%Y', payment.date) as integer) year,
+       cast(strftime('%m', payment.date) as integer) month,
+       cast(strftime('%d', payment.date) as integer) day,
        substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
        payment.amount
 FROM armgmt_payment payment
 LEFT JOIN armgmt_invoice invoice ON invoice.id = payment.invoice_id
 UNION
 SELECT invoice.date,
+       cast(strftime('%Y', invoice.date) as integer) year,
+       cast(strftime('%m', invoice.date) as integer) month,
+       cast(strftime('%d', invoice.date) as integer) day,
        substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
        round(sum(qty * unit_price), 2) old_amount
 FROM armgmt_invoicelineitem l
