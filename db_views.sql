@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS "invoices";
 CREATE VIEW "invoices" AS
 SELECT client.name client_name,
        substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) `no`,
@@ -28,8 +29,9 @@ LEFT JOIN
           sum(amount) paid
    FROM armgmt_payment
    GROUP BY invoice_id) paid ON paid.invoice_id = invoice.id
-ORDER BY `no` ASC
+ORDER BY `no` ASC;
 
+DROP VIEW IF EXISTS "payments";
 CREATE VIEW "payments" AS
 SELECT payment.date,
        substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
@@ -44,4 +46,4 @@ FROM armgmt_invoicelineitem l
 INNER JOIN armgmt_invoice invoice ON invoice.id = l.invoice_id
 WHERE invoice.date < '2012-09-01'
 GROUP BY invoice_id
-ORDER BY payment.date ASC
+ORDER BY payment.date ASC;
