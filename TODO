@@ -1,12 +1,5 @@
- - add comments to code
+bugs:
+
+features:
+
  - warn if DocumentNo not sequential
- - remove authentication for admin site
-
-bug fixes:
-
- - 400 error when adding InvoiceLineAction from InvoiceLineItemInline
-   in InvoiceAdmin
-
-views.py:
-
- - class-based views
