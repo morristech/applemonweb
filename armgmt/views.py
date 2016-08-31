@@ -2,6 +2,7 @@ from datetime import date
 from decimal import Decimal
 import os
 
+from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
@@ -109,6 +110,14 @@ class InvoiceWizard(SessionWizardView):
         if step == '1':
             return {'client': self.get_cleaned_data_for_step('0')['client']}
         return {}
+
+    def get_context_data(self, form, **kwargs):
+        context = super(InvoiceWizard, self).get_context_data(form=form,
+                                                              **kwargs)
+        context['title'] = "Invoice Wizard"
+        context['site_title'] = admin.AdminSite.site_title
+        context['site_header'] = admin.AdminSite.site_header
+        return context
 
     def done(self, form_list, form_dict, **kwargs):
         data = self.get_all_cleaned_data()
