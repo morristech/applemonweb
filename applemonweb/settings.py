@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Load the secret key if possible, otherwise generate one.
-secret_filename = os.path.join(BASE_DIR, 'secrets.json')
+secret_filename = os.path.join(BASE_DIR, 'data/secrets.json')
 try:
     secrets = json.load(open(secret_filename))
     SECRET_KEY = secrets['SECRET_KEY']
@@ -74,7 +74,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'applemonweb.db')
+        'NAME': os.path.join(BASE_DIR, 'data/applemonweb.db')
     }
 }
 
