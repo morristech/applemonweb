@@ -295,6 +295,9 @@ class Payment(models.Model):
     def __str__(self):
         return "%s: %s" % (self.invoice, self.amount)
 
+    class Meta:
+        ordering = ['-date', '-invoice__no']
+
 
 class Task(models.Model):
     assignee = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -349,3 +352,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['date_due', 'date_opened']

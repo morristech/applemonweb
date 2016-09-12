@@ -139,7 +139,6 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ['client', 'invoice', 'date', 'amount']
     list_display_links = ['amount']
     list_filter = ['invoice__client']
-    ordering = ['-invoice', '-date']
     date_hierarchy = 'date'
 
 
@@ -155,7 +154,6 @@ class TaskAdmin(admin.ModelAdmin):
                      'client__name', 'client__notes',
                      'project__name', 'project__content',
                      'invoice__name', 'invoice__content']
-    ordering = ['date_due', 'date_opened']
     date_hierarchy = 'date_opened'
 
     def get_form(self, request, *args, **kwargs):
