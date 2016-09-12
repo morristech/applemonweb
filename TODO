@@ -1,5 +1,8 @@
 bugs:
 
+ - LaTeX is not escaped.
+ - Invoice history says position of invoice line items changed.
+
 features:
 
- - warn if DocumentNo not sequential
+ - Warn if DocumentNo not sequential.
