@@ -13,33 +13,24 @@ django.setup()
 from armgmt.models import InvoiceLineAction
 
 
-mapping = {'1':        None,
-           'Balance':  'balance',
-           'days':     'day',
-           'Day':      'day',
-           'Days':     'day',
-           'fees':     'fee',
-           'Hours':    'hours',
-           'N/A':      None,
-           'Service':  'service',
-           'services': 'service',
-           'Services': 'service',
-           'sets':     'set',
-           'Set':      'set',
-           'Sets':     'set',
-           'Visit':    'visit',
-           'Visits':   'visit',
-           'visits':   'visit'}
+mapping = {'1': None, 'N/A': None}
 
-
-for old_name, new_name in mapping.items():
+actions = InvoiceLineAction.objects.all()
+for old in actions:
+    new_name = old.name.lower().rstrip('s')
     try:
-        old = InvoiceLineAction.objects.get(name=old_name)
-    except InvoiceLineAction.DoesNotExist:
-        continue
-    if new_name:
-        new = InvoiceLineAction.objects.get(name=new_name)
-    else:
-        new = None
-    old.invoicelineitem_set.update(action=new)
-    old.delete()
+        new_name = mapping[new_name]
+    except KeyError:
+        pass
+    if old.name != new_name:
+        if new_name:
+            try:
+                new = InvoiceLineAction.objects.get(name=new_name)
+            except InvoiceLineAction.DoesNotExist:
+                old.name = new_name
+                old.save()
+                continue
+        else:
+            new = None
+        old.invoicelineitem_set.update(action=new)
+        old.delete()
