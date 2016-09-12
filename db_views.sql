@@ -36,23 +36,27 @@ ORDER BY `no` ASC;
 
 DROP VIEW IF EXISTS "payments";
 CREATE VIEW "payments" AS
-SELECT payment.date,
+SELECT client.name client_name,
+       substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
+       payment.date,
        cast(strftime('%Y', payment.date) as integer) year,
        cast(strftime('%m', payment.date) as integer) month,
        cast(strftime('%d', payment.date) as integer) day,
-       substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
        payment.amount
 FROM armgmt_payment payment
 LEFT JOIN armgmt_invoice invoice ON invoice.id = payment.invoice_id
+LEFT JOIN armgmt_client client ON client.id = invoice.client_id
 UNION
-SELECT invoice.date,
+SELECT client.name client_name,
+       substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
+       invoice.date,
        cast(strftime('%Y', invoice.date) as integer) year,
        cast(strftime('%m', invoice.date) as integer) month,
        cast(strftime('%d', invoice.date) as integer) day,
-       substr(invoice.no, 0, 3) || '-' || substr(invoice.no, 3) invoice_no,
        round(sum(qty * unit_price), 2) old_amount
 FROM armgmt_invoicelineitem l
 INNER JOIN armgmt_invoice invoice ON invoice.id = l.invoice_id
+LEFT JOIN armgmt_client client ON client.id = invoice.client_id
 WHERE invoice.date < '2012-09-01'
 GROUP BY invoice_id
 ORDER BY payment.date ASC;
