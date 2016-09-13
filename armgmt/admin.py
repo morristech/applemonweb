@@ -21,6 +21,7 @@ class ProjectInline(admin.TabularInline):
     form = DocumentForm
     fields = ['no', 'start_date', 'end_date', 'name', 'amount']
     readonly_fields = fields
+    can_delete = False
     show_change_link = True
     extra = 0
     max_num = 0
@@ -31,6 +32,7 @@ class InvoiceInline(admin.TabularInline):
     form = DocumentForm
     fields = ['no', 'date', 'name', 'amount', 'is_paid']
     readonly_fields = ['name', 'amount', 'is_paid']
+    can_delete = False
     show_change_link = True
     extra = 0
     max_num = 1
@@ -55,6 +57,7 @@ class TaskInline(admin.TabularInline):
     extra = 0
     fields = ['name', 'assignee', 'author', 'date_opened', 'status',
               'client', 'project', 'invoice']
+    can_delete = False
     show_change_link = True
 
 
@@ -65,6 +68,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_filter = ['active']
     readonly_fields = ['billed', 'paid', 'owed']
     search_fields = ['name', 'address', 'notes']
+    save_on_top = True
 
     def changelist_view(self, request, extra_context=None):
         """Filter only active clients by default."""
@@ -85,6 +89,7 @@ class DocumentAdmin(admin.ModelAdmin):
     list_per_page = 100
     search_fields = ['no', 'name', 'content', 'client__name', 'client__notes']
     save_as = True
+    save_on_top = True
 
     def get_search_results(self, request, queryset, search_term):
         # TODO: hack to treat DocumentNo as an integer by removing hyphen.
@@ -143,6 +148,7 @@ class TaskAdmin(admin.ModelAdmin):
                      'project__name', 'project__content',
                      'invoice__name', 'invoice__content']
     date_hierarchy = 'date_opened'
+    save_on_top = True
 
     def get_form(self, request, *args, **kwargs):
         """Override get_form to pass request.user to form."""
