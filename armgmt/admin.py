@@ -20,6 +20,7 @@ admin.site.unregister(Group)
 
 class ProjectInline(admin.TabularInline):
     model = Project
+    form = DocumentForm
     fields = ['No', 'start_date', 'end_date', 'name', 'amount']
     readonly_fields = fields
     extra = 0
@@ -33,10 +34,11 @@ class ProjectInline(admin.TabularInline):
 
 class InvoiceInline(admin.TabularInline):
     model = Invoice
+    form = DocumentForm
     fields = ['No', 'date', 'name', 'amount', 'is_paid']
-    readonly_fields = fields
+    readonly_fields = ['No', 'amount', 'is_paid']
     extra = 0
-    max_num = 0
+    max_num = 1
 
     def No(self, instance):
         """Link Invoice No to InvoiceAdmin."""

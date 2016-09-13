@@ -1,7 +1,7 @@
 from django import forms
-from django.db.models import Max
 
-from armgmt.models import DocumentNo, Document, Client, Project, Invoice, Task
+from armgmt.models import (Document, Client, Project, Invoice, Task,
+                           get_document_no)
 
 
 class DocumentForm(forms.ModelForm):
@@ -18,12 +18,9 @@ class DocumentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
 
-        # Auto-increment document no field to maximum no + 1.
+        # Auto-increment document no field.
         if 'no' in self.fields:
-            document = self.Meta.model
-            max_document_no = document.objects.aggregate(Max('no'))['no__max']
-            if max_document_no and max_document_no != 'None':
-                self.fields['no'].initial = DocumentNo(max_document_no) + 1
+            self.fields['no'].initial = get_document_no(self.Meta.model)
 
         # Limit client drop-down options to active clients.
         if 'client' in self.fields:

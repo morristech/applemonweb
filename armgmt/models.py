@@ -5,6 +5,7 @@ from numbers import Number
 from django import forms
 from django.conf import settings
 from django.db import models
+from django.db.models import Max
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
@@ -20,6 +21,13 @@ def agg_total(qset):
         return total.quantize(Decimal('.01'))
     else:
         return 0
+
+
+def get_document_no(document):
+    """Generate a document no by incrementing maximum no."""
+    max_document_no = document.objects.aggregate(Max('no'))['no__max']
+    if max_document_no and max_document_no != 'None':
+        return DocumentNo(max_document_no) + 1
 
 
 def str2num(s, format=tuple):
@@ -196,6 +204,8 @@ class Project(Document):
         return agg_total(invoice_set)
 
     def clean(self):
+        if not self.no:
+            self.no = get_document_no(Project)
         if self.end_date and self.start_date > self.end_date:
             raise ValidationError("Project start date must precede end date.")
 
@@ -230,8 +240,11 @@ class Invoice(Document):
         return reverse('invoice', args=[self.no])
 
     def clean(self):
-        if (hasattr(self, 'client') and hasattr(self, 'project') and
-                self.client != self.project.client):
+        if not self.no:
+            self.no = get_document_no(Invoice)
+        if self.project.client and not hasattr(self, 'client'):
+            self.client = self.project.client
+        if self.client != self.project.client:
             raise ValidationError(
                 "Project and invoice must have the same client.")
 
