@@ -1,7 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
 
 from armgmt.models import (Client, Project,
                            Invoice, InvoiceLineItem, InvoiceLineAction,
@@ -21,29 +19,21 @@ admin.site.unregister(Group)
 class ProjectInline(admin.TabularInline):
     model = Project
     form = DocumentForm
-    fields = ['No', 'start_date', 'end_date', 'name', 'amount']
+    fields = ['no', 'start_date', 'end_date', 'name', 'amount']
     readonly_fields = fields
+    show_change_link = True
     extra = 0
     max_num = 0
-
-    def No(self, instance):
-        """Link Project No to ProjectAdmin."""
-        url = reverse('admin:armgmt_project_change', args=(instance.id,))
-        return mark_safe("<a href='%s'>%s</a>" % (url, instance.no))
 
 
 class InvoiceInline(admin.TabularInline):
     model = Invoice
     form = DocumentForm
-    fields = ['No', 'date', 'name', 'amount', 'is_paid']
-    readonly_fields = ['No', 'amount', 'is_paid']
+    fields = ['no', 'date', 'name', 'amount', 'is_paid']
+    readonly_fields = ['name', 'amount', 'is_paid']
+    show_change_link = True
     extra = 0
     max_num = 1
-
-    def No(self, instance):
-        """Link Invoice No to InvoiceAdmin."""
-        url = reverse('admin:armgmt_invoice_change', args=(instance.id,))
-        return mark_safe("<a href='%s'>%s</a>" % (url, instance.no))
 
 
 class InvoiceLineItemInline(admin.TabularInline):
@@ -64,13 +54,8 @@ class TaskInline(admin.TabularInline):
     form = TaskForm
     extra = 0
     fields = ['name', 'assignee', 'author', 'date_opened', 'status',
-              'client', 'project', 'invoice', 'Edit']
-    readonly_fields = ['Edit']
-
-    def Edit(self, instance):
-        """Link Task Name to TaskAdmin."""
-        url = reverse('admin:armgmt_task_change', args=(instance.id,))
-        return mark_safe('<a href="%s">Edit</a>' % url)
+              'client', 'project', 'invoice']
+    show_change_link = True
 
 
 @admin.register(Client)
