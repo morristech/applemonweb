@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from numbers import Number
+import re
 
 from django import forms
 from django.conf import settings
@@ -184,6 +185,13 @@ class Document(models.Model):
     name = models.CharField(max_length=127, blank=True)
     content = models.TextField(blank=True)
 
+    def clean(self):
+        if self.content and not self.name:
+            self.name = re.match(
+                '([ -]{0,1}\w+){0,12}',
+                " ".join(self.content.split()).strip()
+            ).group()
+
     def __str__(self):
         if self.name:
             return "%s (%s)" % (self.no, self.name[:25])
@@ -204,6 +212,7 @@ class Project(Document):
         return agg_total(invoice_set)
 
     def clean(self):
+        super(Project, self).clean()
         if not self.no:
             self.no = get_document_no(Project)
         if self.end_date and self.start_date > self.end_date:
@@ -240,6 +249,7 @@ class Invoice(Document):
         return reverse('invoice', args=[self.no])
 
     def clean(self):
+        super(Invoice, self).clean()
         if not self.no:
             self.no = get_document_no(Invoice)
         if self.project.client and not hasattr(self, 'client'):
