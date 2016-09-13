@@ -140,6 +140,7 @@ class DocumentNoField(models.Field):
             kwargs['validators'].append(validate_DocumentNo)
         kwargs['form_class'] = forms.CharField
         kwargs['max_length'] = 6
+        kwargs['required'] = False
         return super(DocumentNoField, self).formfield(**kwargs)
 
 

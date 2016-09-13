@@ -84,6 +84,7 @@ class DocumentAdmin(admin.ModelAdmin):
     list_filter = ['client']
     list_per_page = 100
     search_fields = ['no', 'name', 'content', 'client__name', 'client__notes']
+    save_as = True
 
     def get_search_results(self, request, queryset, search_term):
         # TODO: hack to treat DocumentNo as an integer by removing hyphen.
