@@ -420,14 +420,14 @@ class Task(models.Model):
             raise ValidationError("Task must be closed after date opened.")
         if self.status in ['done', 'archived']:
             raise ValidationError("Done task must record date closed (today?)")
-        if (self.client and self.project
-                and self.client != self.project.client):
+        if (self.client and self.project and
+                self.client != self.project.client):
             raise ValidationError("Client and project must match.")
-        if (self.client and self.invoice
-                and self.client != self.invoice.client):
+        if (self.client and self.invoice and
+                self.client != self.invoice.client):
             raise ValidationError("Client and invoice must match")
-        if (self.project and self.invoice
-                and self.project != self.invoice.project):
+        if (self.project and self.invoice and
+                self.project != self.invoice.project):
             raise ValidationError("Project and invoice must match")
 
     def __str__(self):

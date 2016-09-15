@@ -79,17 +79,17 @@ def render_statement(request, client_name):
         "Total balance %s must equal last running balance %s" % (
             client.owed(),
             running_balance,
-         )
+    )
     balances['over90'] = (sum(e['balance'] for e in entries
                           if e['age'] > 90))
     balances['over60'] = (sum(e['balance'] for e in entries
                           if e['age'] > 60) - balances['over90'])
     balances['over30'] = (sum(e['balance'] for e in entries
-                          if e['age'] > 30) - balances['over90']
-                          - balances['over60'])
-    balances['under30'] = (balances['total']
-                           - balances['over90'] - balances['over60']
-                           - balances['over30'])
+                          if e['age'] > 30) - balances['over90'] -
+                          balances['over60'])
+    balances['under30'] = (balances['total'] -
+                           balances['over90'] - balances['over60'] -
+                           balances['over30'])
 
     context = {'date': today,
                'client': client,
