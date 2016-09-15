@@ -65,7 +65,8 @@ class TaskInline(admin.TabularInline):
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     inlines = [TaskInline, ProjectInline, InvoiceInline]
-    list_display = ['name', 'owed']
+    list_display = ['name', 'firm_name', 'contact_name', 'city', 'state',
+                    'phone_number', 'owed']
     list_filter = ['active']
     readonly_fields = ['address', 'address_validation',
                        'billed', 'paid', 'owed']
