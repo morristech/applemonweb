@@ -32,11 +32,15 @@ class InvoiceInline(admin.TabularInline):
     model = Invoice
     form = DocumentForm
     fields = ['no', 'date', 'name', 'amount', 'is_paid']
-    readonly_fields = ['name', 'amount', 'is_paid']
+    readonly_fields = fields
     can_delete = False
     show_change_link = True
     extra = 0
     max_num = 1
+
+
+class InvoiceEditableInline(InvoiceInline):
+    readonly_fields = list(set(InvoiceInline.fields).difference(['no']))
 
 
 class InvoiceLineItemInline(admin.TabularInline):
@@ -105,7 +109,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(DocumentAdmin):
-    inlines = [TaskInline, InvoiceInline]
+    inlines = [TaskInline, InvoiceEditableInline]
     list_display = ['client', 'no', 'start_date', 'end_date',
                     'name', 'amount']
     readonly_fields = ['amount']
