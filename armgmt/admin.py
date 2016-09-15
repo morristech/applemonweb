@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.db.models.fields import CharField
 
 from armgmt.models import (Client, Project,
                            Invoice, InvoiceLineItem, InvoiceLineAction,
@@ -66,8 +67,10 @@ class ClientAdmin(admin.ModelAdmin):
     inlines = [TaskInline, ProjectInline, InvoiceInline]
     list_display = ['name', 'owed']
     list_filter = ['active']
-    readonly_fields = ['billed', 'paid', 'owed']
-    search_fields = ['name', 'address', 'notes']
+    readonly_fields = ['address', 'address_validation',
+                       'billed', 'paid', 'owed']
+    search_fields = [f.name for f in Client._meta.get_fields()
+                     if isinstance(f, CharField)] + ['notes']
     save_on_top = True
 
     def changelist_view(self, request, extra_context=None):

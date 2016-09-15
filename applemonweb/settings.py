@@ -9,14 +9,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Load the secret key if possible, otherwise generate one.
 secret_filename = os.path.join(BASE_DIR, 'data/secrets.json')
 try:
-    secrets = json.load(open(secret_filename))
-    SECRET_KEY = secrets['SECRET_KEY']
+    SECRETS = json.load(open(secret_filename))
+    SECRET_KEY = SECRETS['SECRET_KEY']
 except Exception:
     SECRET_KEY = get_random_string(50)
-    secrets = {'SECRET_KEY': SECRET_KEY}
-    json.dump(secrets, open(secret_filename, 'w'))
+    SECRETS = {'SECRET_KEY': SECRET_KEY}
+    json.dump(SECRETS, open(secret_filename, 'w'))
 
-if 'DEBUG' in secrets and secrets['DEBUG']:
+if 'DEBUG' in SECRETS and SECRETS['DEBUG']:
     DEBUG = True
 else:
     ALLOWED_HOSTS = ['.applemon.com']

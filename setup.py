@@ -14,9 +14,11 @@ setup(
     install_requires=[
         'django',
         'django-formtools',
+        'django-localflavor',
         'django-mass-edit',
         'django-sql-explorer',
         'gunicorn',
+        'python-usps2',
     ],
     data_files=[],
 )

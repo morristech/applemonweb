@@ -46,10 +46,28 @@ for customer in gc.customers.values():
     if Client.objects.filter(name=name):
         print("Error adding client: duplicate client name: %s" % name)
         continue
-    address = [customer['full_name']] + customer['address']
-    address = '\n'.join([a.strip() for a in address])
-    c = Client(name=name, address=address)
-    c.clean()
+    contact_name = customer['full_name']
+    if len(customer['address']) == 2:
+        print("Error adding client: no firm name for {}".format(name))
+        customer['address'].insert(0, '')
+    elif len(customer['address']) == 4:
+        print("Error adding client: dropping address line {} ({})".format(
+              customer['address'][0], name))
+        del customer['address'][0]
+    assert len(customer['address']) == 3
+    firm_name = customer['address'][0]
+    address2 = customer['address'][1]
+    if ',' in customer['address'][2]:
+        (city, notcity) = customer['address'][2].split(',')
+        (state, zip_code) = notcity.strip().split()
+    else:
+        last_line = customer['address'][2].split()
+        city = ' '.join(last_line[:-2])
+        state = last_line[-2]
+        zip_code = last_line[-1]
+    c = Client(name=name, contact_name=contact_name, firm_name=firm_name,
+               address2=address2, city=city, state=state, zip_code=zip_code)
+    #c.clean()
     c.save()
 
 for job in gc.jobs.values():

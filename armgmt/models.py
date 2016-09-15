@@ -9,6 +9,9 @@ from django.db import models
 from django.db.models import Max
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from localflavor.us.models import (PhoneNumberField,
+                                   USStateField, USZipCodeField)
+from usps.addressinformation import Address, USPSXMLError
 
 
 def agg_total(qset):
@@ -22,6 +25,12 @@ def agg_total(qset):
         return total.quantize(Decimal('.01'))
     else:
         return 0
+
+
+def clean_address(s):
+    """Sanitize mailing address fields by removing punctuation."""
+    s = ''.join(i for i in s if i.isalnum() or i.isspace() or i in '/\'-&')
+    return ' '.join(s.split())
 
 
 def get_document_no(document):
@@ -146,9 +155,29 @@ class DocumentNoField(models.Field):
 
 class Client(models.Model):
     name = models.CharField(unique=True, max_length=127)
-    address = models.TextField()
+    contact_name = models.CharField(max_length=127)
+    firm_name = models.CharField(max_length=127, blank=True)
+    address1 = models.CharField(max_length=127, blank=True)
+    address2 = models.CharField(max_length=127)
+    city = models.CharField(max_length=127)
+    state = USStateField()
+    zip_code = USZipCodeField()
+    phone_number = PhoneNumberField(blank=True)
     notes = models.TextField(blank=True)
     active = models.BooleanField(default=True)
+    address_validation = models.TextField(blank=True)
+
+    @property
+    def address(self):
+        if self.firm_name:
+            n2 = '\n{}'.format(self.firm_name)
+        else:
+            n2 = ''
+        return "ATTN {n1}{n2}\n{a2} {a1}\n{city} {state}  {zip_code}".format(
+            n1=self.contact_name, n2=n2,
+            a1=self.address1, a2=self.address2,
+            city=self.city, state=self.state, zip_code=self.zip_code
+        ).upper()
 
     def billed(self):
         invoice_set = InvoiceLineItem.objects.filter(invoice__client=self)
@@ -172,6 +201,33 @@ class Client(models.Model):
     def clean(self):
         if self.owed() and not self.active:
             raise ValidationError("Cannot inactivate client with balance.")
+        self.contact_name = clean_address(self.contact_name)
+        self.firm_name = clean_address(self.firm_name)
+        if '-' in self.zip_code:
+            (zip5, zip4) = self.zip_code.split('-')
+        else:
+            zip5 = self.zip_code
+            zip4 = ''
+        address_validator = Address(user_id=settings.SECRETS['USPS_USER_ID'])
+        try:
+            address_response = address_validator.validate(
+                address1=self.address1, address2=self.address2,
+                city=self.city, state=self.state, zip_5=zip5, zip_4=zip4)
+        except USPSXMLError as e:
+            raise ValidationError(e)
+        if 'Address1' in address_response:
+            self.address1 = address_response['Address1']
+        self.address2 = address_response['Address2']
+        self.city = address_response['City']
+        self.state = address_response['State']
+        if address_response['Zip4']:
+            self.zip_code = address_response['FullZip']
+        else:
+            self.zip_code = address_response['Zip5']
+        if 'ReturnText' in address_response and address_response['ReturnText']:
+            self.address_validation = address_response['ReturnText']
+        else:
+            self.address_validation = "Validated by USPS."
 
     def __str__(self):
         return self.name
