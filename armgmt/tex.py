@@ -23,7 +23,7 @@ def pdflatex(latex):
         directory = mkdtemp()
         jobname = 'output'
         filename = os.path.join(directory, jobname) + '.pdf'
-        for i in range(3):
+        for _ in range(3):
             with open(os.devnull, 'wb') as devnull:
                 if os.name == 'nt':
                     process = Popen(['pdflatex',
@@ -35,7 +35,7 @@ def pdflatex(latex):
                                      '-output-directory', directory,
                                      '-jobname', jobname],
                                     stdin=PIPE, stdout=devnull, stderr=PIPE)
-            stdout, stderr = process.communicate(latex)
+            _stdout, stderr = process.communicate(latex)
         try:
             with open(filename, 'rb') as f:
                 pdf = f.read()

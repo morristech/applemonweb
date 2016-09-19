@@ -40,7 +40,7 @@ def get_document_no(document):
         return DocumentNo(max_document_no) + 1
 
 
-def str2num(s, format=tuple):
+def str2num(s, fmt=tuple):
     """Parse year and number from string of form yynum or yy-num."""
     s = str(s).strip()
     if len(s) == 0:
@@ -55,12 +55,12 @@ def str2num(s, format=tuple):
         num = int(s[3:])
     else:
         raise ValueError("Could not parse '%s' as yy-num." % s)
-    if format == tuple:
+    if fmt == tuple:
         # Format year and number as a tuple.
         return (yy, num)
     else:
         # Format based on a number of form yynum.
-        return format(yy * 1000 + num)
+        return fmt(yy * 1000 + num)
 
 
 class DocumentNo(tuple):
@@ -69,7 +69,7 @@ class DocumentNo(tuple):
     def __new__(cls, value):
         if value is None:
             return None
-        elif type(value) is DocumentNo:
+        elif isinstance(value, DocumentNo):
             return value
         elif isinstance(value, tuple):
             # Assume tuple is of form (yy, num).
@@ -295,10 +295,7 @@ class Invoice(Document):
         return self.amount - self.paid
 
     def is_paid(self):
-        if self.balance <= 0:
-            return True
-        else:
-            return False
+        return bool(self.balance <= 0)
     is_paid.boolean = True
     is_paid.short_description = 'Paid?'
 
@@ -347,10 +344,7 @@ class InvoiceLineItem(models.Model):
         return self.project.client
 
     def is_billed(self):
-        if self.invoice:
-            return True
-        else:
-            return False
+        return bool(self.invoice)
     is_billed.boolean = True
     is_billed.admin_order_field = 'invoice'
     is_billed.short_description = 'Billed?'

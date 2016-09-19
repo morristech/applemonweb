@@ -106,7 +106,7 @@ class InvoiceWizard(SessionWizardView):
     form_list = [InvoiceForm1, InvoiceForm2]
     template_name = 'armgmt/invoice-wizard.html'
 
-    def get_form_kwargs(self, step):
+    def get_form_kwargs(self, step=None):
         if step == '1':
             return {'client': self.get_cleaned_data_for_step('0')['client']}
         return {}
@@ -119,7 +119,7 @@ class InvoiceWizard(SessionWizardView):
         context['site_header'] = admin.AdminSite.site_header
         return context
 
-    def done(self, form_list, form_dict, **kwargs):
+    def done(self, form_list, **kwargs):
         data = self.get_all_cleaned_data()
         invoice = Invoice(**data)
         invoice.clean()
