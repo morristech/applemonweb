@@ -1,4 +1,14 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+
+
+with open('requirements.in') as f:
+    # requires = f.read().splitlines()
+    requires = []
+    for line in f:
+        if line.startswith('-e'):
+            requires.append(line.split('#egg=')[1])
+        else:
+            requires.append(line)
 
 setup(
     name='applemonweb',
@@ -7,18 +17,10 @@ setup(
     url='https://applemon.com/',
     author='Dara Adib',
     classifiers=[
-       'Development Status :: 3 - Alpha',
-       'Programming Language :: Python :: 3',
+        'Development Status :: 3 - Alpha',
+        'Programming Language :: Python :: 3',
     ],
     packages=[],
-    install_requires=[
-        'django',
-        'django-formtools',
-        'django-localflavor',
-        'django-mass-edit',
-        'django-sql-explorer',
-        'gunicorn',
-        'python-usps2',
-    ],
+    install_requires=requires,
     data_files=[],
 )
