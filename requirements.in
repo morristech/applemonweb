@@ -4,4 +4,4 @@ django-localflavor
 django-mass-edit
 -e git+https://github.com/groveco/django-sql-explorer.git@75a7774fc6e764fba62fac3cb78f9b8f57d6f61d#egg=django-sql-explorer
 gunicorn
--e git+https://github.com/daradib/python-usps.git@cbe7c3380ebac514a140f17d658d3249a19f093c#egg=python-usps2
+python-usps2>=0.2
