@@ -2,6 +2,6 @@ django>=1.10
 django-formtools
 django-localflavor
 django-mass-edit
--e git+https://github.com/groveco/django-sql-explorer.git@75a7774fc6e764fba62fac3cb78f9b8f57d6f61d#egg=django-sql-explorer
+django-sql-explorer>=1.1.0
 gunicorn
 python-usps2>=0.2
