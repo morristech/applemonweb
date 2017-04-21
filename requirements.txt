@@ -4,13 +4,13 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
--e git+https://github.com/groveco/django-sql-explorer.git@e681502411f933ac375d8b563924068513941ee7#egg=django-sql-explorer
 django-formtools==2.0
 django-localflavor==1.4.1
 django-mass-edit==3.0
-django==1.10.6
-gunicorn==19.7.0
+django-sql-explorer==1.1.1
+django==1.10.7
+gunicorn==19.7.1
 python-usps2==0.2.0
-six==1.10.0
-sqlparse==0.2.3
-unicodecsv==0.14.1
+six==1.10.0               # via django-sql-explorer
+sqlparse==0.2.3           # via django-sql-explorer
+unicodecsv==0.14.1        # via django-sql-explorer
