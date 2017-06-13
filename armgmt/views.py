@@ -4,9 +4,9 @@ import os
 
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
-from django.utils.decorators import method_decorator
 from formtools.wizard.views import SessionWizardView
 
 from armgmt.forms import InvoiceForm1, InvoiceForm2
@@ -100,7 +100,7 @@ def render_statement(request, client_name):
     return render_latex(request, 'armgmt/statement.tex', context, filename)
 
 
-class InvoiceWizard(SessionWizardView):
+class InvoiceWizard(LoginRequiredMixin, SessionWizardView):
     """Create invoice from wizard."""
 
     form_list = [InvoiceForm1, InvoiceForm2]
@@ -126,7 +126,3 @@ class InvoiceWizard(SessionWizardView):
         invoice.save()
         return HttpResponseRedirect(
             reverse('admin:armgmt_invoice_change', args=(invoice.id,)))
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(InvoiceWizard, self).dispatch(*args, **kwargs)
