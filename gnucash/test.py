@@ -2,6 +2,7 @@
 
 import os
 import sys
+from urllib.parse import unquote
 
 import django
 
@@ -29,7 +30,7 @@ request.user.is_authenticated = lambda: True
 for client in clients:
     print("Rendering statement for client %s" % client.name)
     r = render_statement(request, client.name)
-    filename = r['Content-Disposition'].split('=')[1]
+    filename = unquote(r['Content-Disposition'].split("filename*=utf-8''")[1])
     path = os.path.join(output_dir, filename)
     with open(path, 'wb') as f:
         f.write(r.content)
