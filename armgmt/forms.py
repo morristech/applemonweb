@@ -117,3 +117,11 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = []
+
+
+class ToolForm(forms.Form):
+    """Form for generating reports from file upload."""
+
+    files = forms.FileField(widget=forms.ClearableFileInput(
+        attrs={'multiple': True}
+    ))

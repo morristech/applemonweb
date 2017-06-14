@@ -12,4 +12,8 @@ urlpatterns = [
     url(r'^statement/(.*)', views.render_statement, name='statement'),
     # Create invoice from wizard.
     url(r'^wizard/$', views.InvoiceWizard.as_view(), name='wizard'),
+    # List report tools.
+    url(r'^admin/tools/$', views.ToolsView.as_view(), name='tools'),
+    # Create noise report from file upload.
+    url(r'^admin/tools/noise/$', views.NoiseView.as_view(), name='noise'),
 ]

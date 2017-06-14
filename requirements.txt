@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
+cycler==0.10.0            # via matplotlib
 django-flat-responsive==1.4.1
 django-formtools==2.0
 django-localflavor==1.5
@@ -11,7 +12,16 @@ django-mass-edit==3.0
 django-sql-explorer==1.1.1
 django==1.10.7
 gunicorn==19.7.1
+matplotlib==2.0.2
+numpy==1.13.0
+olefile==0.44             # via pillow
+pandas==0.20.2
+pillow==4.1.1             # via reportlab
+pyparsing==2.2.0          # via matplotlib
+python-dateutil==2.6.0    # via matplotlib, pandas
 python-usps2==0.2.0
-six==1.10.0               # via django-sql-explorer
+pytz==2017.2              # via matplotlib, pandas
+reportlab==3.4.0
+six==1.10.0               # via cycler, django-sql-explorer, matplotlib, python-dateutil
 sqlparse==0.2.3           # via django-sql-explorer
 unicodecsv==0.14.1        # via django-sql-explorer

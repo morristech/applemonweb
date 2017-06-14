@@ -1,20 +1,41 @@
 from datetime import date
 from decimal import Decimal
 import os
+from urllib.parse import quote
 
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 from formtools.wizard.views import SessionWizardView
 
-from armgmt.forms import InvoiceForm1, InvoiceForm2
+from armgmt.forms import InvoiceForm1, InvoiceForm2, ToolForm
 from armgmt.models import Client, DocumentNo, Invoice
-from armgmt.tex import render_latex
+from armgmt.tex import pdflatex
+from armgmt.tools.noise import generate_noise_report
 
 
 logo_path = os.path.join(os.getcwd(), 'armgmt/templates/armgmt/logo')
+
+
+def pdf_response(pdf, filename):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = "attachment; filename*=utf-8''{}".format(
+        quote(filename)
+    )
+    response['Content-Length'] = len(pdf)
+    response.write(pdf)
+    return response
+
+
+def render_latex(request, template, dictionary, filename):
+    latex = render_to_string(template, dictionary)
+    pdf = pdflatex(latex)
+    return pdf_response(pdf, filename)
 
 
 def index(request):
@@ -98,6 +119,61 @@ def render_statement(request, client_name):
                'logo_path': logo_path}
     filename = 'statement-%s.pdf' % client.name.lower()
     return render_latex(request, 'armgmt/statement.tex', context, filename)
+
+
+class ToolsView(LoginRequiredMixin, TemplateView):
+    """List available report tools."""
+
+    template_name = 'armgmt/tools.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ToolsView, self).get_context_data(**kwargs)
+        context['title'] = "Tools"
+        context['tool_views'] = [NoiseView]
+        return context
+
+
+class BaseToolView(LoginRequiredMixin, FormView):
+    """Render generic report from data in file upload."""
+
+    form_class = ToolForm
+    template_name = 'armgmt/tool.html'
+    title = ""
+    description = ""
+    url = None
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseToolView, self).get_context_data(**kwargs)
+        context['title'] = self.title
+        context['description'] = self.description
+        return context
+
+    def handler(self, files):
+        raise NotImplementedError
+
+    def post(self, request):
+        form = self.get_form()
+        if form.is_valid():
+            files = request.FILES.getlist('files')
+            try:
+                (pdf, filename) = self.handler(files)
+            except AssertionError as e:
+                form.add_error(None, e)
+                return self.form_invalid(form)
+            return pdf_response(pdf, filename)
+        else:
+            return self.form_invalid(form)
+
+
+class NoiseView(BaseToolView):
+    """Render noise report from data in file upload."""
+
+    title = "Noise Monitoring Report"
+    description = "Upload files to generate a noise monitoring report."
+    url = reverse_lazy('noise')
+
+    def handler(self, files):
+        return generate_noise_report(files)
 
 
 class InvoiceWizard(LoginRequiredMixin, SessionWizardView):

@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div>
+<table>
+    {% for view in tool_views %}
+    <tr>
+        <th><a href="{{ view.url }}">{{ view.title }}</a></th>
+        <td>{{ view.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+{% endblock %}
