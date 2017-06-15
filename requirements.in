@@ -1,4 +1,4 @@
-django>=1.10,<1.11
+django>=1.11,<1.12
 django-flat-responsive
 django-formtools
 django-localflavor
