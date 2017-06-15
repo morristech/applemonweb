@@ -158,8 +158,8 @@ class TaskAdmin(admin.ModelAdmin):
     date_hierarchy = 'date_opened'
     save_on_top = True
 
-    def get_form(self, request, *args, **kwargs):
+    def get_form(self, request, obj=None, **kwargs):
         """Override get_form to pass request.user to form."""
-        form = super(TaskAdmin, self).get_form(request, *args, **kwargs)
+        form = super(TaskAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form

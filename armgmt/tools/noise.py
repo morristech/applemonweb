@@ -48,8 +48,8 @@ def generate_noise_report(files):
                 uploaded_file.content_type
             ))
     assert sound_logs, "No sound level data logs provided."
-    (fh1, report_filename) = tempfile.mkstemp(suffix='.pdf')
-    (fh2, assembled_filename) = tempfile.mkstemp(suffix='.pdf')
+    (_fh1, report_filename) = tempfile.mkstemp(suffix='.pdf')
+    (_fh2, assembled_filename) = tempfile.mkstemp(suffix='.pdf')
     try:
         doc = SimpleDocTemplate(report_filename, pagesize=letter)
         doc.title = title

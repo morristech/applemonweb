@@ -142,15 +142,18 @@ class DocumentNoField(models.Field):
     def get_prep_value(self, value):
         return int(self.to_python(value))
 
-    def formfield(self, **kwargs):
+    def formfield(self, form_class=None, choices_form_class=None, **kwargs):
+        if not form_class:
+            form_class = forms.CharField
         if 'validators' not in kwargs:
             kwargs['validators'] = []
         if validate_DocumentNo not in kwargs['validators']:
             kwargs['validators'].append(validate_DocumentNo)
-        kwargs['form_class'] = forms.CharField
         kwargs['max_length'] = 6
         kwargs['required'] = False
-        return super(DocumentNoField, self).formfield(**kwargs)
+        return super(DocumentNoField, self).formfield(
+            form_class, choices_form_class, **kwargs
+        )
 
 
 class Client(models.Model):

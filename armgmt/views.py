@@ -151,7 +151,7 @@ class BaseToolView(LoginRequiredMixin, FormView):
     def handler(self, files):
         raise NotImplementedError
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
             files = request.FILES.getlist('files')
