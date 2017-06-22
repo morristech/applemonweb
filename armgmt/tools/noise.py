@@ -125,13 +125,12 @@ def generate_noise_report(files):
             story.append(PageBreak())
 
         doc.build(story)
-        subprocess.check_call(['gs', '-sDEVICE=pdfwrite',
-                               '-dPDFSETTINGS=/ebook',
-                               '-sPAPERSIZE=letter', '-dFIXEDMEDIA',
-                               '-dPDFFitPage',
-                               '-dNOPAUSE', '-dBATCH', '-dQUIET',
-                               '-sOutputFile={}'.format(assembled_filename)] +
-                              other_pdfs + [report_filename])
+        subprocess.check_call([
+            'gs', '-dSAFER', '-dBATCH', '-dNOPAUSE', '-dQUIET',
+            '-sDEVICE=pdfwrite', '-dPDFSETTINGS=/ebook',
+            '-sPAPERSIZE=letter', '-dFIXEDMEDIA', '-dPDFFitPage',
+            '-sOutputFile={}'.format(assembled_filename)
+        ] + other_pdfs + [report_filename])
         with open(assembled_filename, 'rb') as f:
             pdf = f.read()
     finally:
