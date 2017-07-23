@@ -69,12 +69,15 @@ def generate_noise_report(files):
             date = df['timestamp'].max().date()
             if not max_date or date > max_date:
                 max_date = date
-            assert df['unit'].eq('dBA').all(), \
-                "Sound level must be measured in A-weighted decibels (dBA)."
+            unit = df['unit'].iloc[0]
+            assert unit in ['dBA', 'dBC'], \
+                "Sound must be measured in A/C-weighted decibels (dBA or dBC)."
+            assert df['unit'].eq(unit).all(), \
+                "Sound level units must be consistent."
             df['ratio'] = df['level'].apply(to_ratio)
-            leq_fmt = "{overall:.1f} dBA (over entire session)"
+            leq_fmt = "{overall:.1f} {dB} (over entire session)"
             if len(df) > 3600:
-                leq_fmt += "\n{min:.1f} dBA - {max:.1f} dBA (rolling 1-hour)"
+                leq_fmt += "\n{min:.1f} {dB} - {max:.1f} {dB} (rolling 1-hour)"
                 df['leq'] = to_decibels(
                     df['ratio'].rolling(3600, center=True).mean()
                 )
@@ -84,7 +87,8 @@ def generate_noise_report(files):
                 df['leq'] = to_decibels(df['ratio'].mean())
             leq = leq_fmt.format(
                 overall=to_decibels(df['ratio'].mean()),
-                min=df['leq'].min(), max=df['leq'].max()
+                dB=unit,
+                min=df['leq'].min(), max=df['leq'].max(),
             )
             story.append(Paragraph("Sound Level Monitoring Report",
                          styles["Title"]))
@@ -96,8 +100,8 @@ def generate_noise_report(files):
                     df['timestamp'].iloc[-1] - df['timestamp'].iloc[0]
                 ).replace('0 days ', '')],
                 ['Device', 'HD600'],
-                ['Lmin', '{} dBA'.format(df['level'].min())],
-                ['Lmax', '{} dBA'.format(df['level'].max())],
+                ['Lmin', '{} {}'.format(df['level'].min(), unit)],
+                ['Lmax', '{} {}'.format(df['level'].max(), unit)],
                 ['Leq', leq],
             ]))
 
@@ -105,7 +109,7 @@ def generate_noise_report(files):
             ax = fig.add_subplot(1, 1, 1)
             ax.set_title("Logged Data")
             ax.set_xlabel("Time")
-            ax.set_ylabel("dBA")
+            ax.set_ylabel(unit)
             ax.grid(True)
             (line,) = ax.plot_date(df['timestamp'], df['level'], fmt='b-',
                                    linewidth=0.5)
