@@ -10,15 +10,15 @@ django-formtools==2.0
 django-localflavor==1.5.2
 django-mass-edit==3.0
 django-sql-explorer==1.1.1
-django==1.11.3
+django==1.11.5
 gunicorn==19.7.1
 matplotlib==2.0.2
-numpy==1.13.0
+numpy==1.13.1
 olefile==0.44             # via pillow
-pandas==0.20.2
-pillow==4.2.0             # via reportlab
+pandas==0.20.3
+pillow==4.2.1             # via reportlab
 pyparsing==2.2.0          # via matplotlib
-python-dateutil==2.6.0    # via matplotlib, pandas
+python-dateutil==2.6.1    # via matplotlib, pandas
 python-usps2==0.2.0
 pytz==2017.2              # via django, matplotlib, pandas
 reportlab==3.4.0
