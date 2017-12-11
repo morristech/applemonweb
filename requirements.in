@@ -1,9 +1,9 @@
-django>=1.11,<1.12
-django-flat-responsive
+django>=2.0,<2.1
 django-formtools
-django-localflavor
-django-mass-edit
-django-sql-explorer>=1.1.1
+-e git+https://github.com/django/django-localflavor.git@b0428b1557c891ad84f6a889aea12d78576ef835#egg=django-localflavor
+-e git+https://github.com/burke-software/django-mass-edit.git@a4b65ebc4bd2480b360b839d823816b2430af5f0#egg=django-mass-edit
+-e git+https://github.com/benkonrath/django-phonenumber-field.git@7485051ea52698905005c36488b5df8c1e86c1c2#egg=django-phonenumber-field
+-e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
 gunicorn
 matplotlib
 numpy

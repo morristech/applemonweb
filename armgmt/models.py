@@ -8,9 +8,9 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Max
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
-from localflavor.us.models import (PhoneNumberField,
-                                   USStateField, USZipCodeField)
+from django.urls import reverse
+from localflavor.us.models import USStateField, USZipCodeField
+from phonenumber_field.modelfields import PhoneNumberField
 from usps.addressinformation import Address, USPSXMLError
 
 
@@ -136,7 +136,7 @@ class DocumentNoField(models.Field):
     def to_python(self, value):
         return validate_DocumentNo(value, output=True)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         return str(self.to_python(value))
 
     def get_prep_value(self, value):
@@ -240,7 +240,7 @@ class Client(models.Model):
 
 
 class Document(models.Model):
-    client = models.ForeignKey(Client)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     no = DocumentNoField(unique=True)
     name = models.CharField(max_length=127, blank=True)
     content = models.TextField(blank=True)
@@ -281,7 +281,7 @@ class Project(Document):
 
 class Invoice(Document):
     date = models.DateField(default=date.today)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     @property
     def amount(self):
@@ -328,11 +328,14 @@ class InvoiceLineAction(models.Model):
 
 class InvoiceLineItem(models.Model):
     position = models.PositiveSmallIntegerField()
-    invoice = models.ForeignKey(Invoice)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
     content = models.TextField()
     qty = models.DecimalField(max_digits=6, decimal_places=3)
-    action = models.ForeignKey(InvoiceLineAction, null=True, blank=True)
+    action = models.ForeignKey(
+        InvoiceLineAction, on_delete=models.SET_NULL,
+        null=True, blank=True,
+    )
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
 
     @property
@@ -360,7 +363,7 @@ class InvoiceLineItem(models.Model):
 
 
 class Payment(models.Model):
-    invoice = models.ForeignKey(Invoice)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     notes = models.TextField(blank=True)
@@ -377,10 +380,14 @@ class Payment(models.Model):
 
 
 class Task(models.Model):
-    assignee = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                 related_name='tasks_assigned')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               related_name='tasks_authored')
+    assignee = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='tasks_assigned',
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='tasks_authored',
+    )
     date_opened = models.DateField(default=date.today)
     date_due = models.DateField(null=True, blank=True)
     date_closed = models.DateField(null=True, blank=True)
@@ -392,9 +399,15 @@ class Task(models.Model):
     ])
     name = models.CharField(max_length=127)
     content = models.TextField(blank=True)
-    client = models.ForeignKey(Client, null=True, blank=True)
-    project = models.ForeignKey(Project, null=True, blank=True)
-    invoice = models.ForeignKey(Invoice, null=True, blank=True)
+    client = models.ForeignKey(
+        Client, on_delete=models.SET_NULL, null=True, blank=True,
+    )
+    project = models.ForeignKey(
+        Project, on_delete=models.SET_NULL, null=True, blank=True,
+    )
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.SET_NULL, null=True, blank=True,
+    )
 
     def clean(self):
         if self.project and not self.client:

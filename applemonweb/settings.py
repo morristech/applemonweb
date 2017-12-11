@@ -31,7 +31,6 @@ LOGGING = {
 }
 
 INSTALLED_APPS = [
-    'flat_responsive',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +41,7 @@ INSTALLED_APPS = [
     'formtools',
     'massadmin',
     'explorer',
+    'phonenumber_field',
     'armgmt',
 ]
 
@@ -78,8 +78,16 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'data/applemonweb.db')
-    }
+        'NAME': os.path.join(BASE_DIR, 'data/applemonweb.db'),
+    },
+    'readonly': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'file:' + \
+            os.path.join(BASE_DIR, 'data/applemonweb.db') + '?mode=ro',
+        'OPTIONS': {
+            'uri': True,
+        },
+    },
 }
 
 LANGUAGE_CODE = 'en-us'
@@ -99,5 +107,9 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+PHONENUMBER_DEFAULT_REGION = 'US'
+
+EXPLORER_CONNECTIONS = {'Default': 'readonly'}
+EXPLORER_DEFAULT_CONNECTION = 'readonly'
 EXPLORER_DEFAULT_ROWS = 100
 EXPLORER_RECENT_QUERY_COUNT = 0
