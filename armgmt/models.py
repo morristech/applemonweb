@@ -63,6 +63,29 @@ def str2num(s, fmt=tuple):
         return fmt(yy * 1000 + num)
 
 
+def validate_seq_documents(cls, new_no=None):
+    """Validate that document no are all sequential."""
+    q = cls.objects.values_list('no').order_by()
+    if new_no:
+        new_no = DocumentNo(new_no)
+        q = q.filter(no__lt=new_no)
+    nos = [DocumentNo(i[0]) for i in q]
+    if new_no:
+        nos.append(new_no)
+    old_no = None
+    for no in nos:
+        if no[0] < 11:
+            # Ignore missing data before 2011.
+            continue
+        if old_no and old_no[0] == no[0] and old_no + 1 != no:
+            raise ValidationError(
+                "{doc} not sequential - missing {doc} {no}.".format(
+                    doc=cls.__name__, no=old_no+1
+                )
+            )
+        old_no = no
+
+
 class DocumentNo(tuple):
     __slots__ = []
 
@@ -309,9 +332,11 @@ class Invoice(Document):
         super(Invoice, self).clean()
         if not self.no:
             self.no = get_document_no(Invoice)
-        if self.project.client and not hasattr(self, 'client'):
+        validate_seq_documents(Invoice, self.no)
+        if (self.project_id and self.project.client and
+                not hasattr(self, 'client')):
             self.client = self.project.client
-        if self.client != self.project.client:
+        if self.client_id and self.client != self.project.client:
             raise ValidationError(
                 "Project and invoice must have the same client.")
 
