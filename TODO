@@ -4,4 +4,6 @@ bugs:
 
 features:
 
- - Warn if DocumentNo not sequential.
+ - Dynamically filter projects by client when adding an invoice.
+ - Group clients together with a parent field.
+ - Support multiple billing entities or databases.
