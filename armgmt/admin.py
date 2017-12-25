@@ -39,20 +39,6 @@ class InvoiceInline(admin.TabularInline):
     max_num = 0
 
 
-class InvoiceEditableInline(InvoiceInline):
-    readonly_fields = list(set(InvoiceInline.fields).difference(['no']))
-
-    def get_max_num(self, request, obj=None, **kwargs):
-        """Show one new invoice form when clicking add another link.
-
-        More invoice forms do not increment the number correctly.
-        """
-        if obj:
-            return obj.invoice_set.count() + 1
-        else:
-            return 1
-
-
 class InvoiceLineItemInline(admin.TabularInline):
     model = InvoiceLineItem
     form = InvoiceLineItemForm
@@ -119,7 +105,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(DocumentAdmin):
-    inlines = [TaskInline, InvoiceEditableInline]
+    inlines = [TaskInline, InvoiceInline]
     list_display = ['client', 'no', 'start_date', 'end_date',
                     'name', 'amount']
     readonly_fields = ['amount']
