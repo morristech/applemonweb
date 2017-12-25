@@ -11,9 +11,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from formtools.wizard.views import SessionWizardView
 
-from armgmt.forms import InvoiceForm1, InvoiceForm2, ToolForm
+from armgmt.forms import ToolForm
 from armgmt.models import Client, DocumentNo, Invoice
 from armgmt.tex import pdflatex
 from armgmt.tools.noise import generate_noise_report
@@ -174,31 +173,3 @@ class NoiseView(BaseToolView):
 
     def handler(self, files):
         return generate_noise_report(files)
-
-
-class InvoiceWizard(LoginRequiredMixin, SessionWizardView):
-    """Create invoice from wizard."""
-
-    form_list = [InvoiceForm1, InvoiceForm2]
-    template_name = 'armgmt/invoice-wizard.html'
-
-    def get_form_kwargs(self, step=None):
-        if step == '1':
-            return {'client': self.get_cleaned_data_for_step('0')['client']}
-        return {}
-
-    def get_context_data(self, form, **kwargs):
-        context = super(InvoiceWizard, self).get_context_data(form=form,
-                                                              **kwargs)
-        context['title'] = "Invoice Wizard"
-        context['site_title'] = admin.AdminSite.site_title
-        context['site_header'] = admin.AdminSite.site_header
-        return context
-
-    def done(self, form_list, **kwargs):
-        data = self.get_all_cleaned_data()
-        invoice = Invoice(**data)
-        invoice.clean()
-        invoice.save()
-        return HttpResponseRedirect(
-            reverse('admin:armgmt_invoice_change', args=(invoice.id,)))

@@ -48,31 +48,6 @@ class InvoiceLineItemForm(forms.ModelForm):
     content = forms.CharField(widget=forms.Textarea)
 
 
-class InvoiceForm1(DocumentForm):
-    """Invoice form page 1: enter client, no, date."""
-
-    class Meta:
-        model = Invoice
-        fields = ['client', 'no', 'date']
-
-
-class InvoiceForm2(DocumentForm):
-    """Invoice form page 2: choose from client's projects."""
-
-    def __init__(self, client, *args, **kwargs):
-        """Accept additional client argument from wizard to limit projects."""
-        super(InvoiceForm2, self).__init__(*args, **kwargs)
-
-        # Limit project drop-down options to client's projects.
-        if client:
-            self.fields['project'].queryset = \
-                Project.objects.filter(client=client)
-
-    class Meta:
-        model = Invoice
-        fields = ['project']
-
-
 class TaskForm(forms.ModelForm):
     """Form for Tasks.
 
