@@ -3,6 +3,7 @@ from decimal import Decimal
 import os
 from urllib.parse import quote
 
+from dal.autocomplete import Select2QuerySetView
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +14,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 from armgmt.forms import ToolForm
-from armgmt.models import Client, DocumentNo, Invoice
+from armgmt.models import Client, DocumentNo, Invoice, Project
 from armgmt.tex import pdflatex
 from armgmt.tools.noise import generate_noise_report
 
@@ -173,3 +174,25 @@ class NoiseView(BaseToolView):
 
     def handler(self, files):
         return generate_noise_report(files)
+
+
+class AutocompleteBase(LoginRequiredMixin, Select2QuerySetView):
+    """Provide generic autocomplete results for form widget."""
+
+    qs = None
+
+    def get_queryset(self):
+        items = {k: v for k, v in self.forwarded.items() if v}
+        return self.qs.filter(**items)
+
+
+class AutocompleteClient(AutocompleteBase):
+    qs = Client.objects.filter(active=True)
+
+
+class AutocompleteInvoice(AutocompleteBase):
+    qs = Invoice.objects.all()
+
+
+class AutocompleteProject(AutocompleteBase):
+    qs = Project.objects.all()

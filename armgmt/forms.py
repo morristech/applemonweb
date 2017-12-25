@@ -1,3 +1,4 @@
+from dal.autocomplete import ModelSelect2
 from django import forms
 
 from armgmt.models import (Document, Client, Project, Invoice, Task,
@@ -27,16 +28,13 @@ class DocumentForm(forms.ModelForm):
             self.fields['client'].queryset = \
                 Client.objects.filter(active=True)
 
-        # Limit project drop-down options to client's projects.
-        if 'project' in self.fields and hasattr(self.instance, 'client'):
-            client = self.instance.client
-            if client:
-                self.fields['project'].queryset = \
-                    Project.objects.filter(client=client)
-
     class Meta:
         model = Document
         exclude = []
+        widgets = {
+            'project': ModelSelect2(url='autocomplete-project',
+                                    forward=['client']),
+        }
 
 
 class InvoiceLineItemForm(forms.ModelForm):
@@ -66,32 +64,17 @@ class TaskForm(forms.ModelForm):
         if hasattr(self, 'current_user') and self.current_user:
             self.fields['author'].initial = self.current_user
 
-        # Limit client drop-down options to active clients.
-        if 'client' in self.fields:
-            self.fields['client'].queryset = \
-                Client.objects.filter(active=True)
-
-        # Limit project and invoice drop-down options to client's
-        # projects and invoices.
-        if hasattr(self.instance, 'client') and self.instance.client:
-            client = self.instance.client
-            if 'project' in self.fields:
-                self.fields['project'].queryset = \
-                    Project.objects.filter(client=client)
-            if 'invoice' in self.fields:
-                self.fields['invoice'].queryset = \
-                    Invoice.objects.filter(client=client)
-
-        # Limit invoice drop-down options to project's invoices.
-        if 'invoice' in self.fields and hasattr(self.instance, 'project'):
-            project = self.instance.project
-            if project:
-                self.fields['invoice'].queryset = \
-                    Invoice.objects.filter(project=project)
-
     class Meta:
         model = Task
         exclude = []
+        widgets = {
+            'client': ModelSelect2(url='autocomplete-client',
+                                   forward=['invoice', 'project']),
+            'invoice': ModelSelect2(url='autocomplete-invoice',
+                                    forward=['client', 'project']),
+            'project': ModelSelect2(url='autocomplete-project',
+                                    forward=['client', 'invoice']),
+        }
 
 
 class ToolForm(forms.Form):
