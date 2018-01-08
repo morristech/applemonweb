@@ -1,5 +1,5 @@
 django>=2.0,<2.1
--e git+https://github.com/yourlabs/django-autocomplete-light.git@625fceed51201d4cbda845f12426823117cb4176#egg=django-autocomplete-light
+django-autocomplete-light>=3.3.0-rc1
 django-formtools
 -e git+https://github.com/django/django-localflavor.git@b0428b1557c891ad84f6a889aea12d78576ef835#egg=django-localflavor
 -e git+https://github.com/burke-software/django-mass-edit.git@a4b65ebc4bd2480b360b839d823816b2430af5f0#egg=django-mass-edit
