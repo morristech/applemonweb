@@ -33,9 +33,20 @@ def clean_address(s):
     return ' '.join(s.split())
 
 
-def get_document_no(document):
+def get_default_biller_id():
+    """Return default biller if exists or the first primary id."""
+    try:
+        return Biller.objects.get(code='C').pk
+    except Biller.DoesNotExist:
+        return 1
+
+
+def get_document_no(document, biller=None):
     """Generate a document no by incrementing maximum no."""
-    max_document_no = document.objects.aggregate(Max('no'))['no__max']
+    if not biller:
+        biller = get_default_biller_id()
+    qs = document.objects.filter(biller=biller)
+    max_document_no = qs.aggregate(Max('no'))['no__max']
     if max_document_no and max_document_no != 'None':
         return DocumentNo(max_document_no) + 1
 
@@ -63,9 +74,9 @@ def str2num(s, fmt=tuple):
         return fmt(yy * 1000 + num)
 
 
-def validate_seq_documents(cls, new_no=None):
+def validate_seq_documents(cls, biller, new_no=None):
     """Validate that document no are all sequential."""
-    q = cls.objects.values_list('no').order_by()
+    q = cls.objects.filter(biller=biller).values_list('no').order_by()
     if new_no:
         new_no = DocumentNo(new_no)
         q = q.filter(no__lt=new_no)
@@ -80,7 +91,7 @@ def validate_seq_documents(cls, new_no=None):
         if old_no and old_no[0] == no[0] and old_no + 1 != no:
             raise ValidationError(
                 "{doc} not sequential - missing {doc} {no}.".format(
-                    doc=cls.__name__, no=old_no+1
+                    doc=cls.__name__, no=old_no + 1
                 )
             )
         old_no = no
@@ -179,9 +190,8 @@ class DocumentNoField(models.Field):
         )
 
 
-class Client(models.Model):
+class Entity(models.Model):
     name = models.CharField(unique=True, max_length=127)
-    contact_name = models.CharField(max_length=127)
     firm_name = models.CharField(max_length=127, blank=True)
     address1 = models.CharField(max_length=127, blank=True)
     address2 = models.CharField(max_length=127)
@@ -189,6 +199,28 @@ class Client(models.Model):
     state = USStateField()
     zip_code = USZipCodeField()
     phone_number = PhoneNumberField(blank=True)
+    fax_number = PhoneNumberField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+        ordering = ['name']
+
+
+class Biller(Entity):
+    firm_name = models.CharField(max_length=127)
+    code = models.CharField(unique=True, max_length=1)
+
+    class Meta:
+        ordering = ['code']
+
+
+class Client(Entity):
+    biller = models.ForeignKey(Biller, default=get_default_biller_id,
+                               on_delete=models.CASCADE)
+    contact_name = models.CharField(max_length=127)
     notes = models.TextField(blank=True)
     active = models.BooleanField(default=True)
     address_validation = models.TextField(blank=True)
@@ -225,6 +257,7 @@ class Client(models.Model):
         return reverse('statement', args=[self.name])
 
     def clean(self):
+        super(Client, self).clean()
         if self.owed() and not self.active:
             raise ValidationError("Cannot inactivate client with balance.")
         self.contact_name = clean_address(self.contact_name)
@@ -255,16 +288,12 @@ class Client(models.Model):
         else:
             self.address_validation = "Validated by USPS."
 
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-
 
 class Document(models.Model):
+    biller = models.ForeignKey(Biller, default=get_default_biller_id,
+                               on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    no = DocumentNoField(unique=True)
+    no = DocumentNoField()
     name = models.CharField(max_length=127, blank=True)
     content = models.TextField(blank=True)
 
@@ -274,21 +303,33 @@ class Document(models.Model):
                 '([ -]{0,1}\w+){0,12}',
                 " ".join(self.content.split()).strip()
             ).group()
+        if (self.client_id and self.client.biller and
+                not hasattr(self, 'biller')):
+            # Fill in biller from client.
+            self.biller = self.client.biller
+        if self.biller_id and self.biller != self.client.biller:
+            raise ValidationError(
+                "Client must have the same biller.")
 
     def __str__(self):
         if self.name:
-            return "%s (%s)" % (self.no, self.name[:25])
+            return "%s (%s)" % (self.code, self.name[:25])
         else:
-            return str(self.no)
+            return str(self.code)
 
     class Meta:
         abstract = True
         ordering = ['-no']
+        unique_together = ('biller', 'no')
 
 
 class Project(Document):
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(null=True, blank=True)
+
+    @property
+    def code(self):
+        return "{biller}P{no}".format(biller=self.biller.code, no=self.no)
 
     def amount(self):
         invoice_set = InvoiceLineItem.objects.filter(invoice__project=self)
@@ -297,7 +338,7 @@ class Project(Document):
     def clean(self):
         super(Project, self).clean()
         if not self.no:
-            self.no = get_document_no(Project)
+            self.no = get_document_no(Project, self.biller)
         if self.end_date and self.start_date > self.end_date:
             raise ValidationError("Project start date must precede end date.")
 
@@ -305,6 +346,10 @@ class Project(Document):
 class Invoice(Document):
     date = models.DateField(default=date.today)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    @property
+    def code(self):
+        return "{biller}N{no}".format(biller=self.biller.code, no=self.no)
 
     @property
     def amount(self):
@@ -326,19 +371,27 @@ class Invoice(Document):
     is_paid.short_description = 'Paid?'
 
     def get_absolute_url(self):
-        return reverse('invoice', args=[self.no])
+        return reverse('invoice', args=[self.biller.code, self.no])
 
     def clean(self):
         super(Invoice, self).clean()
-        if not self.no:
-            self.no = get_document_no(Invoice)
-        validate_seq_documents(Invoice, self.no)
+        if (self.project_id and self.project.biller and
+                not hasattr(self, 'biller')):
+            # Fill in biller from project.
+            self.biller = self.project.biller
         if (self.project_id and self.project.client and
                 not hasattr(self, 'client')):
+            # Fill in client from project.
             self.client = self.project.client
+        if self.biller_id and self.biller != self.project.biller:
+            raise ValidationError(
+                "Project must have the same biller.")
         if self.client_id and self.client != self.project.client:
             raise ValidationError(
-                "Project and invoice must have the same client.")
+                "Project must have the same client.")
+        if not self.no:
+            self.no = get_document_no(Invoice, self.biller)
+        validate_seq_documents(Invoice, self.biller, self.no)
 
 
 class InvoiceLineAction(models.Model):
@@ -424,6 +477,9 @@ class Task(models.Model):
     ])
     name = models.CharField(max_length=127)
     content = models.TextField(blank=True)
+    biller = models.ForeignKey(
+        Biller, on_delete=models.SET_NULL, null=True, blank=True,
+    )
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True, blank=True,
     )
@@ -435,10 +491,16 @@ class Task(models.Model):
     )
 
     def clean(self):
+        if self.project and not self.biller:
+            # Fill in biller from project.
+            self.biller = self.project.biller
         if self.project and not self.client:
             # Fill in client from project.
             self.client = self.project.client
         if self.invoice:
+            if not self.biller:
+                # Fill in biller from invoice.
+                self.biller = self.invoice.biller
             if not self.client:
                 # Fill in client from invoice.
                 self.client = self.invoice.client
@@ -455,15 +517,21 @@ class Task(models.Model):
             raise ValidationError("Task must be closed after date opened.")
         if self.status in ['done', 'archived']:
             raise ValidationError("Done task must record date closed (today?)")
+        if (self.biller and self.project and
+                self.biller != self.project.biller):
+            raise ValidationError("Project must have the same biller.")
+        if (self.biller and self.invoice and
+                self.biller != self.invoice.biller):
+            raise ValidationError("Invoice must have the same biller.")
         if (self.client and self.project and
                 self.client != self.project.client):
-            raise ValidationError("Client and project must match.")
+            raise ValidationError("Project must have the same client.")
         if (self.client and self.invoice and
                 self.client != self.invoice.client):
-            raise ValidationError("Client and invoice must match")
+            raise ValidationError("Invoice must have the same client.")
         if (self.project and self.invoice and
                 self.project != self.invoice.project):
-            raise ValidationError("Project and invoice must match")
+            raise ValidationError("Invoice must have the same project.")
 
     def __str__(self):
         return self.name

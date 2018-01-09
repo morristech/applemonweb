@@ -2,10 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.db.models.fields import CharField
 
-from armgmt.models import (Client, Project,
+from armgmt.models import (Biller, Client, Project,
                            Invoice, InvoiceLineItem, InvoiceLineAction,
                            Payment, Task)
-from armgmt.forms import DocumentForm, InvoiceLineItemForm, TaskForm
+from armgmt.forms import (DocumentForm, ProjectForm, InvoiceForm,
+                          InvoiceLineItemForm, TaskForm)
 
 
 # Customize admin site appearance.
@@ -19,7 +20,7 @@ admin.site.unregister(Group)
 
 class ProjectInline(admin.TabularInline):
     model = Project
-    form = DocumentForm
+    form = ProjectForm
     fields = ['no', 'start_date', 'end_date', 'name', 'amount']
     readonly_fields = fields
     can_delete = False
@@ -30,7 +31,7 @@ class ProjectInline(admin.TabularInline):
 
 class InvoiceInline(admin.TabularInline):
     model = Invoice
-    form = DocumentForm
+    form = InvoiceForm
     fields = ['no', 'date', 'name', 'amount', 'is_paid']
     readonly_fields = fields
     can_delete = False
@@ -62,12 +63,19 @@ class TaskInline(admin.TabularInline):
     show_change_link = True
 
 
+@admin.register(Biller)
+class BillerAdmin(admin.ModelAdmin):
+    list_display = ['code', 'name', 'firm_name', 'city', 'state',
+                    'phone_number']
+    list_display_links = ['name']
+
+
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     inlines = [TaskInline, ProjectInline, InvoiceInline]
     list_display = ['name', 'firm_name', 'contact_name', 'city', 'state',
                     'phone_number', 'owed']
-    list_filter = ['active']
+    list_filter = ['biller', 'active']
     readonly_fields = ['address', 'address_validation',
                        'billed', 'paid', 'owed']
     search_fields = [f.name for f in Client._meta.get_fields()
@@ -88,8 +96,8 @@ class ClientAdmin(admin.ModelAdmin):
 
 class DocumentAdmin(admin.ModelAdmin):
     form = DocumentForm
-    list_display_links = ['no']
-    list_filter = ['client']
+    list_display_links = ['code']
+    list_filter = ['biller', 'client']
     list_per_page = 100
     search_fields = ['no', 'name', 'content', 'client__name', 'client__notes']
     save_as = True
@@ -105,10 +113,11 @@ class DocumentAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(DocumentAdmin):
+    form = ProjectForm
     inlines = [TaskInline, InvoiceInline]
-    list_display = ['client', 'no', 'start_date', 'end_date',
+    list_display = ['client', 'code', 'start_date', 'end_date',
                     'name', 'amount']
-    readonly_fields = ['amount']
+    readonly_fields = ['code', 'amount']
     date_hierarchy = 'start_date'
     search_fields = DocumentAdmin.search_fields + \
         ['task__name', 'task__content', 'invoice__name', 'invoice__content']
@@ -116,10 +125,11 @@ class ProjectAdmin(DocumentAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(DocumentAdmin):
+    form = InvoiceForm
     inlines = [TaskInline, InvoiceLineItemInline, PaymentInline]
-    list_display = ['is_paid', 'client', 'no', 'date', 'name', 'amount',
-                    'paid']
-    readonly_fields = ['is_paid', 'amount', 'paid', 'balance']
+    list_display = ['is_paid', 'client', 'code', 'date', 'name',
+                    'amount', 'paid']
+    readonly_fields = ['code', 'is_paid', 'amount', 'paid', 'balance']
     date_hierarchy = 'date'
     search_fields = DocumentAdmin.search_fields + \
         ['project__name', 'project__content', 'task__name', 'task__content',
@@ -135,7 +145,7 @@ class InvoiceLineActionAdmin(admin.ModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
     list_display = ['client', 'invoice', 'date', 'amount']
     list_display_links = ['amount']
-    list_filter = ['invoice__client']
+    list_filter = ['invoice__biller', 'invoice__client']
     date_hierarchy = 'date'
 
 

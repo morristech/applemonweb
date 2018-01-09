@@ -3,8 +3,7 @@ from decimal import Decimal
 import os
 from urllib.parse import quote
 
-from dal.autocomplete import Select2QuerySetView
-from django.contrib import admin
+from dal.autocomplete import Select2ListView, Select2QuerySetView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -14,7 +13,8 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 from armgmt.forms import ToolForm
-from armgmt.models import Client, DocumentNo, Invoice, Project
+from armgmt.models import (Client, DocumentNo, Invoice, Project,
+                           get_document_no)
 from armgmt.tex import pdflatex
 from armgmt.tools.noise import generate_noise_report
 
@@ -44,10 +44,10 @@ def index(request):
 
 
 @login_required
-def render_invoice(request, invoice_no):
+def render_invoice(request, biller_code, invoice_no):
     try:
         invoice = Invoice.objects.select_related().get(
-            no=DocumentNo(invoice_no)
+            biller__code=biller_code, no=DocumentNo(invoice_no),
         )
         line_items = (invoice.invoicelineitem_set.select_related('action')
                       .order_by('position', 'date')
@@ -57,7 +57,7 @@ def render_invoice(request, invoice_no):
     dictionary = {'invoice': invoice,
                   'line_items': line_items,
                   'logo_path': logo_path}
-    filename = 'invoice-%s.pdf' % str(invoice.no)
+    filename = '%s.pdf' % str(invoice.code)
     return render_latex(request, 'armgmt/invoice.tex', dictionary, filename)
 
 
@@ -177,12 +177,15 @@ class NoiseView(BaseToolView):
 
 
 class AutocompleteBase(LoginRequiredMixin, Select2QuerySetView):
-    """Provide generic autocomplete results for form widget."""
+    """Provide generic autocomplete queryset for form widget."""
 
     qs = None
 
     def get_queryset(self):
-        items = {k: v for k, v in self.forwarded.items() if v}
+        items = {
+            k: v for k, v in self.forwarded.items() if v and
+            k in (f.name for f in self.qs.model._meta.get_fields())
+        }
         return self.qs.filter(**items)
 
 
@@ -196,3 +199,32 @@ class AutocompleteInvoice(AutocompleteBase):
 
 class AutocompleteProject(AutocompleteBase):
     qs = Project.objects.all()
+
+
+class AutocompleteTextBase(LoginRequiredMixin, Select2ListView):
+    """Provide generic autocomplete list for form widget."""
+
+    def get_item(self):
+        pass
+
+    def get_list(self):
+        item = self.get_item()
+        if item:
+            return [str(item)]
+        else:
+            return []
+
+    def create(self, text):
+        return text
+
+
+class AutocompleteInvoiceNo(AutocompleteTextBase):
+
+    def get_item(self):
+        return get_document_no(Invoice, self.forwarded['biller'])
+
+
+class AutocompleteProjectNo(AutocompleteTextBase):
+
+    def get_item(self):
+        return get_document_no(Project, self.forwarded['biller'])

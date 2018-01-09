@@ -36,9 +36,9 @@ for client in clients:
         f.write(r.content)
 
 for invoice in invoices:
-    print("Rendering Invoice no. %s" % str(invoice.no))
-    r = render_invoice(request, invoice.no)
-    filename = r['Content-Disposition'].split('=')[1]
+    print("Rendering Invoice no. %s" % invoice.code)
+    r = render_invoice(request, invoice.biller.code, invoice.no)
+    filename = str(r['Content-Disposition'].split("utf-8''")[1])
     path = os.path.join(output_dir, filename)
     with open(path, 'wb') as f:
         f.write(r.content)

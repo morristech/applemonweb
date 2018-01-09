@@ -24,10 +24,13 @@
 \setlength{\parskip}{\smallskipamount}
 \setlength{\parindent}{0pt}
 \date{ {{ invoice.date }} }
-\hypersetup{pdftitle={Invoice {{ invoice.no }} },pdfauthor={Applemon}}
+\hypersetup{pdftitle={% templatetag openbrace %}Invoice {{ invoice.code }}{% templatetag closebrace %},pdfauthor={% templatetag openbrace %}{{ invoice.biller.firm_name }}{% templatetag closebrace %}}
 
 \fancyhead{}
-\fancyfoot[C]{Applemon\\ 151 South Mountain Rd, New City NY 10956-2316\\ Phone: 845-634-0858 \qquad Fax: 845-634-7398\\ Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[C]{% templatetag openbrace %}{{ invoice.biller.firm_name }}\\
+{{ invoice.biller.address2 }},{% if invoice.biller.address1 %} {{ invoice.biller.address1 }},{% endif %} {{ invoice.biller.city }} {{ invoice.biller.state }} {{invoice.biller.zip_code}}\\
+{% if invoice.biller.phone_number %}Phone: {{ invoice.biller.phone_number.as_national }}{% endif %}{% if invoice.biller.fax_number %} \qquad Fax: {{ invoice.biller.fax_number.as_national }}{% endif %}\\
+Page \thepage\ of \pageref{LastPage}{% templatetag closebrace %}
 
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -46,9 +49,9 @@
 \textbf{Please remit to:}
 \smallskip
 
-Applemon\\
-151 South Mountain Rd\\
-New City NY 10956-2316
+{{ invoice.biller.firm_name }}\\
+{{ invoice.biller.address2 }}\\{% if invoice.biller.address1 %} {{ invoice.biller.address1 }}\\{% endif %}
+{{ invoice.biller.city }} {{ invoice.biller.state }} {{invoice.biller.zip_code}}
 
 \begin{flushright}
 \textbf{\huge INVOICE}
@@ -59,7 +62,7 @@ New City NY 10956-2316
 \hline
 \textbf{Invoice No.} & \textbf{Invoice Date} & \textbf{Terms} \tabularnewline
 \hline
-\textbf{ {{ invoice.no }} } & \textbf{ {{ invoice.date }} } & Net 30 days \tabularnewline
+\textbf{ {{ invoice.code }} } & \textbf{ {{ invoice.date }} } & Net 30 days \tabularnewline
 \hline
 \end{tabular}
 
@@ -82,7 +85,7 @@ Re:\quad
 \begin{alltt}\normalfont
 {{ invoice.content }}
 {{ invoice.project.content }}
-Applemon Project No. {{ invoice.project.no }}
+Applemon Project No. {{ invoice.project.code }}
 \end{alltt}
 \end{minipage}
 

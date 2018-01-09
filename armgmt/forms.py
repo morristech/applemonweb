@@ -1,18 +1,33 @@
-from dal.autocomplete import ModelSelect2
+from dal.autocomplete import ListSelect2, ModelSelect2
 from django import forms
 
 from armgmt.models import (Document, Client, Project, Invoice, Task,
                            get_document_no)
 
 
+def select(url, forward=None):
+    """Build Select2 autocomplete widget with default fields."""
+    forwards = ['biller', 'client', 'project', 'invoice']
+    if forward:
+        forwards += forward
+    if url.endswith('no'):
+        cls = ListSelect2
+    else:
+        cls = ModelSelect2
+    return cls(
+        url=url,
+        forward=forwards,
+    )
+
+
 class DocumentForm(forms.ModelForm):
-    """Form for Projects and Invoices.
+    """Base form for Projects and Invoices.
 
     Modifications of this model form:
 
      - Auto-increment document no field to maximum no + 1.
+     - Includes initial/saved document no in autocomplete widget choices.
      - Limits client drop-down options to active clients.
-     - Limits project drop-down options to the client's projects.
 
     """
 
@@ -20,8 +35,17 @@ class DocumentForm(forms.ModelForm):
         super(DocumentForm, self).__init__(*args, **kwargs)
 
         # Auto-increment document no field.
+        # Add initial/saved document no to autocomplete widget choices.
         if 'no' in self.fields:
-            self.fields['no'].initial = get_document_no(self.Meta.model)
+            self.fields['no'].initial = str(get_document_no(self.Meta.model))
+            if self.instance.no:
+                self.fields['no'].widget.choices = [
+                    [self.instance.no, self.instance.no]
+                ]
+            else:
+                self.fields['no'].widget.choices = [
+                    [self.fields['no'].initial, self.fields['no'].initial]
+                ]
 
         # Limit client drop-down options to active clients.
         if 'client' in self.fields:
@@ -31,9 +55,42 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         exclude = []
+
+
+class ProjectForm(DocumentForm):
+    """Form with autocomplete widgets for Projects."""
+    pass
+
+    class Meta:
+        model = Project
+        exclude = []
         widgets = {
-            'project': ModelSelect2(url='autocomplete-project',
-                                    forward=['client']),
+            # The default AdminDateWidget is nicer but breaks the order
+            # jQuery is loaded for django-autocomplete-light, unless
+            # DateField is assigned earlier in the model, see:
+            # https://github.com/yourlabs/django-autocomplete-light/issues/788
+            'start_date': forms.SelectDateWidget,
+            'end_date': forms.SelectDateWidget,
+            'client': select('autocomplete-client'),
+            'no': select('autocomplete-projectno'),
+        }
+
+
+class InvoiceForm(DocumentForm):
+    """Form with autocomplete widgets for Invoices."""
+
+    class Meta:
+        model = Invoice
+        exclude = []
+        widgets = {
+            # The default AdminDateWidget is nicer but breaks the order
+            # jQuery is loaded for django-autocomplete-light, unless
+            # DateField is assigned earlier in the model, see:
+            # https://github.com/yourlabs/django-autocomplete-light/issues/788
+            'date': forms.SelectDateWidget,
+            'client': select('autocomplete-client'),
+            'no': select('autocomplete-invoiceno'),
+            'project': select('autocomplete-project'),
         }
 
 
@@ -68,12 +125,9 @@ class TaskForm(forms.ModelForm):
         model = Task
         exclude = []
         widgets = {
-            'client': ModelSelect2(url='autocomplete-client',
-                                   forward=['invoice', 'project']),
-            'invoice': ModelSelect2(url='autocomplete-invoice',
-                                    forward=['client', 'project']),
-            'project': ModelSelect2(url='autocomplete-project',
-                                    forward=['client', 'invoice']),
+            'client': select('autocomplete-client'),
+            'project': select('autocomplete-project'),
+            'invoice': select('autocomplete-invoice'),
         }
 
 

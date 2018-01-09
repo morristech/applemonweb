@@ -21,7 +21,7 @@
 \usepackage{wrapfig}
 \usepackage{tabularx}
 
-\hypersetup{pdftitle={Account Statement: {{ client.name }} },pdfauthor={Applemon}}
+\hypersetup{pdftitle={% templatetag openbrace %}Account Statement: {{ client.name }}{% templatetag closebrace %},pdfauthor={% templatetag openbrace %}{{ client.biller.firm_name }}{% templatetag closebrace %}}
 
 \geometry{tmargin=0.75in,bmargin=1.5in,lmargin=0.5in,rmargin=0.5in,nomarginpar}
 \setlength{\parskip}{\smallskipamount}
@@ -29,10 +29,10 @@
 
 \pagestyle{fancy}
 \fancyhead{}
-\fancyfoot[C]{Applemon\\
-151 South Mountain Rd, New City NY 10956-2316\\
-Phone: 845-634-0858 \qquad Fax: 845-634-7398\\
-Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[C]{% templatetag openbrace %}{{ client.biller.firm_name }}\\
+{{ client.biller.address2 }},{% if client.biller.address1 %} {{ client.biller.address1 }},{% endif %} {{ client.biller.city }} {{ client.biller.state }} {{client.biller.zip_code}}\\
+{% if client.biller.phone_number %}Phone: {{ client.biller.phone_number.as_national }}{% endif %}{% if client.biller.fax_number %} \qquad Fax: {{ client.biller.fax_number.as_national }}{% endif %}\\
+Page \thepage\ of \pageref{LastPage}{% templatetag closebrace %}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -64,9 +64,10 @@ Page \thepage\ of \pageref{LastPage}}
 \textbf{Please remit to:}
 \smallskip
 
-Applemon\\
-151 South Mountain Rd\\
-New City NY 10956-2316
+{{ client.biller.firm_name }}\\
+{{ client.biller.address2 }}\\{% if client.biller.address1 %} {{ client.biller.address1 }}\\{% endif %}
+{{ client.biller.city }} {{ client.biller.state }} {{client.biller.zip_code}}
+
 \begin{flushright}
 \textbf{\huge STATEMENT}
 \smallskip
@@ -117,7 +118,7 @@ According to our records, the following invoices have outstanding balances.
 \multicolumn{13}{r}{(continued on next page)} \\ \endfoot
 \endlastfoot
 {% for e in entries %}
-\multirow{ {{ e.rows }} }{*}{ {{ e.no }} } &
+\multirow{ {{ e.rows }} }{*}{ {{ client.biller.code }}N{{ e.no }} } &
 \multirow{ {{ e.rows }} }{*}{ {{ e.date }} } &
 \multirow{ {{ e.rows }} }{*}{\$} &
 \multirow{ {{ e.rows }} }{*}{  {{ e.amount|intcomma }} } &

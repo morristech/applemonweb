@@ -7,7 +7,7 @@ urlpatterns = [
     # Redirect home page to admin site.
     url(r'^$', views.index, name='index'),
     # Render invoice at /invoice/YY-NUM.
-    url(r'^invoice/([0-9\-]+)', views.render_invoice, name='invoice'),
+    url(r'^invoice/([A-Z])N([0-9\-]+)', views.render_invoice, name='invoice'),
     # Render statement at /statement/CLIENT.
     url(r'^statement/(.*)', views.render_statement, name='statement'),
     # Provide autocomplete results for django-autocomplete-light.
@@ -17,6 +17,10 @@ urlpatterns = [
         name='autocomplete-invoice'),
     url(r'autocompletes/project/$', views.AutocompleteProject.as_view(),
         name='autocomplete-project'),
+    url(r'autocompletes/invoiceno/$', views.AutocompleteInvoiceNo.as_view(),
+        name='autocomplete-invoiceno'),
+    url(r'autocompletes/projectno/$', views.AutocompleteProjectNo.as_view(),
+        name='autocomplete-projectno'),
     # List report tools.
     url(r'^admin/tools/$', views.ToolsView.as_view(), name='tools'),
     # Create noise report from file upload.
