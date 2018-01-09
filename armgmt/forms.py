@@ -1,8 +1,8 @@
 from dal.autocomplete import ListSelect2, ModelSelect2
 from django import forms
 
-from armgmt.models import (Document, Client, Project, Invoice, Task,
-                           get_document_no)
+from armgmt.models import (Biller, Client, Document, Project, Invoice,
+                           Payment, Task, get_document_no)
 
 
 def select(url, forward=None):
@@ -101,6 +101,37 @@ class InvoiceLineItemForm(forms.ModelForm):
 
     """
     content = forms.CharField(widget=forms.Textarea)
+
+
+class PaymentForm(forms.ModelForm):
+    """Form with optional autocomplete fields for Payments."""
+
+    biller = forms.ModelChoiceField(
+        queryset=Biller.objects.all(),
+        required=False,
+    )
+    client = forms.ModelChoiceField(
+        queryset=Client.objects.all(),
+        widget=select('autocomplete-client'),
+        required=False,
+    )
+    project = forms.ModelChoiceField(
+        queryset=Project.objects.all(),
+        widget=select('autocomplete-project'),
+        required=False,
+    )
+
+    class Meta:
+        model = Payment
+        exclude = []
+        widgets = {
+            # The default AdminDateWidget is nicer but breaks the order
+            # jQuery is loaded for django-autocomplete-light, unless
+            # DateField is assigned earlier in the model, see:
+            # https://github.com/yourlabs/django-autocomplete-light/issues/788
+            'date': forms.SelectDateWidget,
+            'invoice': select('autocomplete-invoice'),
+        }
 
 
 class TaskForm(forms.ModelForm):

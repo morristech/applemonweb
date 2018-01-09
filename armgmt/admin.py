@@ -6,7 +6,7 @@ from armgmt.models import (Biller, Client, Project,
                            Invoice, InvoiceLineItem, InvoiceLineAction,
                            Payment, Task)
 from armgmt.forms import (DocumentForm, ProjectForm, InvoiceForm,
-                          InvoiceLineItemForm, TaskForm)
+                          InvoiceLineItemForm, PaymentForm, TaskForm)
 
 
 # Customize admin site appearance.
@@ -143,6 +143,7 @@ class InvoiceLineActionAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
+    form = PaymentForm
     list_display = ['client', 'invoice', 'date', 'amount']
     list_display_links = ['amount']
     list_filter = ['invoice__biller', 'invoice__client']

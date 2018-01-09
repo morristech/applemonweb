@@ -6,5 +6,4 @@ bugs:
 
 features:
 
- - Dynamically filter invoices by client/project when adding a payment.
  - Group clients together with a parent field.
