@@ -86,7 +86,7 @@ for job in gc.jobs.values():
     numbers = [int(n) for n in job['id'].split('-')]
     year = 2000 + numbers[0]
     #num = numbers[1]
-    assert year <= 2016 and year > 2005, "%s %s" % (job['id'], year)
+    assert year <= 2018 and year > 2005, "%s %s" % (job['id'], year)
     date = datetime(year, 1, 1).date()
     name = re.match('([ -]{0,1}\w+){0,12}',
             " ".join(job['name'].split()).strip()).group()
