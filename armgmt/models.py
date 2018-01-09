@@ -170,7 +170,7 @@ class DocumentNoField(models.Field):
     def to_python(self, value):
         return validate_DocumentNo(value, output=True)
 
-    def from_db_value(self, value, expression, connection):
+    def from_db_value(self, value, expression, connection, context):
         return str(self.to_python(value))
 
     def get_prep_value(self, value):
