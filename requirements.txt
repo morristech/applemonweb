@@ -10,15 +10,14 @@
 -e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
 babel==2.5.1
 cycler==0.10.0            # via matplotlib
-django-autocomplete-light==3.3.0rc3
+django-autocomplete-light==3.3.0rc4
 django-formtools==2.1
-django==2.0
+django==2.0.1
 gunicorn==19.7.1
-matplotlib==2.1.0
-numpy==1.13.3
-olefile==0.44             # via pillow
-pandas==0.21.0
-pillow==4.3.0             # via reportlab
+matplotlib==2.1.1
+numpy==1.14.0
+pandas==0.22.0
+pillow==5.0.0             # via reportlab
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.6.1    # via matplotlib, pandas
 python-usps2==0.2.0
