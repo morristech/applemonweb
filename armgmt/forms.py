@@ -82,7 +82,6 @@ class DocumentForm(forms.ModelForm):
 
 class ProjectForm(DocumentForm):
     """Form with autocomplete widgets for Projects."""
-    pass
 
     class Meta:
         model = Project

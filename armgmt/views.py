@@ -214,7 +214,8 @@ class AutocompleteTextBase(LoginRequiredMixin, Select2ListView):
         else:
             return []
 
-    def create(self, text):
+    @staticmethod
+    def create(text):
         return text
 
 
