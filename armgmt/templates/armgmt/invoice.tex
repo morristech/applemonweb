@@ -85,7 +85,7 @@ Re:\quad
 \begin{alltt}\normalfont
 {{ invoice.content }}
 {{ invoice.project.content }}
-Applemon Project No. {{ invoice.project.code }}
+Applemon Project No. {{ invoice.project.code }}{% if invoice.project.contact_name %}\\ Attention: {{ invoice.project.contact_name }} {% endif %}
 \end{alltt}
 \end{minipage}
 

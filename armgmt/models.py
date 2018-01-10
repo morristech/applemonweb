@@ -326,6 +326,7 @@ class Document(models.Model):
 class Project(Document):
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(null=True, blank=True)
+    contact_name = models.CharField(max_length=127, blank=True)
 
     @property
     def code(self):
