@@ -231,7 +231,7 @@ class Client(Entity):
             n2 = '\n{}'.format(self.firm_name)
         else:
             n2 = ''
-        return "ATTN {n1}{n2}\n{a2} {a1}\n{city} {state}  {zip_code}".format(
+        return "{n1}{n2}\n{a2} {a1}\n{city} {state}  {zip_code}".format(
             n1=self.contact_name, n2=n2,
             a1=self.address1, a2=self.address2,
             city=self.city, state=self.state, zip_code=self.zip_code
