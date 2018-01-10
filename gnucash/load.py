@@ -37,7 +37,13 @@ gc.parse(gcfile)
 
 for obj in [Client, Project, Invoice, InvoiceLineItem, InvoiceLineAction,
             Payment]:
-    obj.objects.all().delete()
+    table = obj._meta.db_table
+    with django.db.connection.cursor() as cursor:
+        cursor.execute("DELETE FROM '{}'".format(table)),
+        cursor.execute(
+            "DELETE FROM sqlite_sequence where name = %s",
+            [table],
+        )
 
 for customer in gc.customers.values():
     if customer['full_name'] == "DELETEME":
