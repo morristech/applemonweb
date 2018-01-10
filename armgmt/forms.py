@@ -1,5 +1,6 @@
 from dal.autocomplete import ListSelect2, ModelSelect2
 from django import forms
+from django.contrib.admin.widgets import AdminDateWidget
 
 from armgmt.models import (Biller, Client, Document, Project, Invoice,
                            Payment, Task, get_document_no)
@@ -18,6 +19,28 @@ def select(url, forward=None):
         url=url,
         forward=forwards,
     )
+
+
+class DateWidget(AdminDateWidget):
+    """Override AdminDateWidget to avoid explicitly loading jQuery.
+
+    AdminDateWidget breaks django-autocomplete-light when DateField
+    is assigned later in the model because jQuery is then
+    loaded after dal. So override media to avoid ordering jQuery.
+
+    See:
+    https://github.com/yourlabs/django-autocomplete-light/issues/959
+
+    """
+
+    @property
+    def media(self):
+        js = [
+            'jquery.init.js',
+            'calendar.js',
+            'admin/DateTimeShortcuts.js',
+        ]
+        return forms.Media(js=['admin/js/%s' % path for path in js])
 
 
 class DocumentForm(forms.ModelForm):
@@ -65,12 +88,8 @@ class ProjectForm(DocumentForm):
         model = Project
         exclude = []
         widgets = {
-            # The default AdminDateWidget is nicer but breaks the order
-            # jQuery is loaded for django-autocomplete-light, unless
-            # DateField is assigned earlier in the model, see:
-            # https://github.com/yourlabs/django-autocomplete-light/issues/788
-            'start_date': forms.SelectDateWidget,
-            'end_date': forms.SelectDateWidget,
+            'start_date': DateWidget,
+            'end_date': DateWidget,
             'client': select('autocomplete-client'),
             'no': select('autocomplete-projectno'),
         }
@@ -83,11 +102,7 @@ class InvoiceForm(DocumentForm):
         model = Invoice
         exclude = []
         widgets = {
-            # The default AdminDateWidget is nicer but breaks the order
-            # jQuery is loaded for django-autocomplete-light, unless
-            # DateField is assigned earlier in the model, see:
-            # https://github.com/yourlabs/django-autocomplete-light/issues/788
-            'date': forms.SelectDateWidget,
+            'date': DateWidget,
             'client': select('autocomplete-client'),
             'no': select('autocomplete-invoiceno'),
             'project': select('autocomplete-project'),
@@ -125,11 +140,7 @@ class PaymentForm(forms.ModelForm):
         model = Payment
         exclude = []
         widgets = {
-            # The default AdminDateWidget is nicer but breaks the order
-            # jQuery is loaded for django-autocomplete-light, unless
-            # DateField is assigned earlier in the model, see:
-            # https://github.com/yourlabs/django-autocomplete-light/issues/788
-            'date': forms.SelectDateWidget,
+            'date': DateWidget,
             'invoice': select('autocomplete-invoice'),
         }
 
