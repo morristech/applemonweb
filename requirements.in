@@ -6,6 +6,7 @@ django-formtools
 -e git+https://github.com/benkonrath/django-phonenumber-field.git@7485051ea52698905005c36488b5df8c1e86c1c2#egg=django-phonenumber-field
 -e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
 gunicorn
+influxdb
 matplotlib
 numpy
 pandas

@@ -9,21 +9,26 @@
 -e git+https://github.com/benkonrath/django-phonenumber-field.git@7485051ea52698905005c36488b5df8c1e86c1c2#egg=django-phonenumber-field
 -e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
 babel==2.5.3
+certifi==2018.1.18        # via requests
+chardet==3.0.4            # via requests
 cycler==0.10.0            # via matplotlib
 django-autocomplete-light==3.3.0rc5
 django-formtools==2.1
 django==2.0.2
 gunicorn==19.7.1
+idna==2.6                 # via requests
+influxdb==5.0.0
 matplotlib==2.1.2
 numpy==1.14.1
 pandas==0.22.0
-phonenumberslite==8.9.0
 pillow==5.0.0             # via reportlab
 pyparsing==2.2.0          # via matplotlib
-python-dateutil==2.6.1    # via matplotlib, pandas
+python-dateutil==2.6.1    # via influxdb, matplotlib, pandas
 python-usps2==0.2.0
-pytz==2018.3              # via babel, django, matplotlib, pandas
+pytz==2018.3              # via babel, django, influxdb, matplotlib, pandas
 reportlab==3.4.0
-six==1.11.0               # via cycler, matplotlib, python-dateutil
+requests==2.18.4          # via influxdb
+six==1.11.0               # via cycler, influxdb, matplotlib, python-dateutil
 sqlparse==0.2.4
 unicodecsv==0.14.1
+urllib3==1.22             # via requests
