@@ -8,20 +8,21 @@
 -e git+https://github.com/burke-software/django-mass-edit.git@a4b65ebc4bd2480b360b839d823816b2430af5f0#egg=django-mass-edit
 -e git+https://github.com/benkonrath/django-phonenumber-field.git@7485051ea52698905005c36488b5df8c1e86c1c2#egg=django-phonenumber-field
 -e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
-babel==2.5.1
+babel==2.5.3
 cycler==0.10.0            # via matplotlib
-django-autocomplete-light==3.3.0rc4
+django-autocomplete-light==3.3.0rc5
 django-formtools==2.1
-django==2.0.1
+django==2.0.2
 gunicorn==19.7.1
-matplotlib==2.1.1
-numpy==1.14.0
+matplotlib==2.1.2
+numpy==1.14.1
 pandas==0.22.0
+phonenumberslite==8.9.0
 pillow==5.0.0             # via reportlab
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.6.1    # via matplotlib, pandas
 python-usps2==0.2.0
-pytz==2017.3              # via babel, django, matplotlib, pandas
+pytz==2018.3              # via babel, django, matplotlib, pandas
 reportlab==3.4.0
 six==1.11.0               # via cycler, matplotlib, python-dateutil
 sqlparse==0.2.4
