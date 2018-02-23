@@ -22,7 +22,12 @@ class Datalogger(models.Model):
             raise ValidationError(
                 "Datalogger serial number must be a positive integer."
             )
-        self.hologram_id = get_hologram_device_id(self.sn)
+        try:
+            self.hologram_id = get_hologram_device_id(self.sn)
+        except Exception:
+            raise ValidationError(
+                "Datalogger serial number not found in Hologram Cloud."
+            )
 
     def __str__(self):
         return str(self.sn)
