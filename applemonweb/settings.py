@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'explorer',
     'phonenumber_field',
     'armgmt',
+    'datalogger',
 ]
 
 MIDDLEWARE = [

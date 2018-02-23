@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^admin/', include('massadmin.urls')),
     url(r'^explorer/', include('explorer.urls')),
     url(r'^', include('armgmt.urls'), name='armgmt'),
+    url(r'^', include('datalogger.urls'), name='datalogger'),
 ]
