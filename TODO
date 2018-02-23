@@ -6,4 +6,5 @@ bugs:
 
 features:
 
- - Group clients together with a parent field.
+ - Import GnuCash phone and fax numbers.
+ - Autocomplete invoice line item contents.
