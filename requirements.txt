@@ -27,6 +27,7 @@ pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.6.1    # via influxdb, matplotlib, pandas
 python-usps2==0.2.0
 pytz==2018.3              # via babel, django, influxdb, matplotlib, pandas
+raven==6.5.0
 reportlab==3.4.0
 requests==2.18.4          # via influxdb
 six==1.11.0               # via cycler, influxdb, matplotlib, python-dateutil

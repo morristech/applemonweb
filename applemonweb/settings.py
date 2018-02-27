@@ -2,6 +2,7 @@ import json
 import os
 
 from django.utils.crypto import get_random_string
+import raven
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -18,8 +19,16 @@ except Exception:
 
 if 'DEBUG' in SECRETS and SECRETS['DEBUG']:
     DEBUG = True
+    sentry_env = 'dev'
 else:
     ALLOWED_HOSTS = ['.applemon.com']
+    sentry_env = 'prod'
+
+RAVEN_CONFIG = {
+    'dsn': SECRETS['SENTRY_DSN'],
+    'environment': sentry_env,
+    'release': raven.fetch_git_sha(BASE_DIR),
+}
 
 LOGGING = {
     'version': 1,
@@ -31,6 +40,7 @@ LOGGING = {
 }
 
 INSTALLED_APPS = [
+    'raven.contrib.django.raven_compat',
     'dal',
     'dal_select2',
     'django.contrib.admin',

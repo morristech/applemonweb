@@ -11,4 +11,5 @@ matplotlib
 numpy
 pandas
 python-usps2>=0.2
+raven
 reportlab
