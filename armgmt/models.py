@@ -171,6 +171,7 @@ class DocumentNoField(models.Field):
         return validate_DocumentNo(value, output=True)
 
     def from_db_value(self, value, expression, connection, context):
+        del expression, connection, context  # unused
         return str(self.to_python(value))
 
     def get_prep_value(self, value):

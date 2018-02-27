@@ -16,7 +16,7 @@ class HologramWebhook(View):
 
     key = settings.SECRETS['HOLOGRAM_SHARED_SECRET']
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         data = parse_qs(request.body.decode())
         assert len(data['key']) == 1
         if data['key'][0] != self.key:

@@ -33,6 +33,7 @@ def pdf_response(pdf, filename):
 
 
 def render_latex(request, template, dictionary, filename):
+    del request  # unused
     latex = render_to_string(template, dictionary)
     pdf = pdflatex(latex)
     return pdf_response(pdf, filename)
@@ -40,6 +41,7 @@ def render_latex(request, template, dictionary, filename):
 
 def index(request):
     """Redirect home page to admin site."""
+    del request  # unused
     return HttpResponseRedirect(reverse('admin:index'))
 
 
