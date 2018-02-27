@@ -14,10 +14,12 @@ from datalogger.utils import write_data
 @method_decorator(csrf_exempt, name='dispatch')
 class HologramWebhook(View):
 
+    key = settings.SECRETS['HOLOGRAM_SHARED_SECRET']
+
     def post(self, request, *args, **kwargs):
         data = parse_qs(request.body.decode())
         assert len(data['key']) == 1
-        if data['key'][0] != settings.SECRETS['HOLOGRAM_SHARED_SECRET']:
+        if data['key'][0] != self.key:
             raise PermissionDenied
         assert len(data['payload']) == 1
         hologram_message = json.loads(data['payload'][0])
