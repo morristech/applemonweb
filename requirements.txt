@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
--e git+https://github.com/django/django-localflavor.git@b0428b1557c891ad84f6a889aea12d78576ef835#egg=django-localflavor
--e git+https://github.com/burke-software/django-mass-edit.git@a4b65ebc4bd2480b360b839d823816b2430af5f0#egg=django-mass-edit
--e git+https://github.com/benkonrath/django-phonenumber-field.git@7485051ea52698905005c36488b5df8c1e86c1c2#egg=django-phonenumber-field
--e git+https://github.com/daradib/django-sql-explorer.git@python3+django2#egg=django-sql-explorer
-babel==2.5.3
+-e git+https://github.com/groveco/django-sql-explorer.git@cfdc88c7ad41adbdaaab848884ea38830d8a0590#egg=django-sql-explorer
+babel==2.5.3              # via django-phonenumber-field
 certifi==2018.1.18        # via requests
 chardet==3.0.4            # via requests
 cycler==0.10.0            # via matplotlib
 django-autocomplete-light==3.3.0rc5
 django-formtools==2.1
+django-localflavor==2.0
+django-mass-edit==3.1
+django-phonenumber-field==2.0.0
 django==2.0.2
 gunicorn==19.7.1
 idna==2.6                 # via requests
@@ -21,6 +21,7 @@ influxdb==5.0.0
 matplotlib==2.1.2
 numpy==1.14.1
 pandas==0.22.0
+phonenumberslite==8.9.0   # via django-phonenumber-field
 pillow==5.0.0             # via reportlab
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.6.1    # via influxdb, matplotlib, pandas
