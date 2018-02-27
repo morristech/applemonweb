@@ -13,7 +13,7 @@ datalogger_field_names = [
     'batt_mv', 'batt_pct', 'boot', 'cell_rssi', 'rh', 'temp',
 ]
 datalogger_tag_names = [
-    'batt_stat', 'cell_stat', 'cell_op', 'v',
+    'batt_stat', 'cell_stat', 'cell_op', 'v', 'v_boot', 'v_sys',
 ]
 
 
