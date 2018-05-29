@@ -18,7 +18,7 @@ from reportlab.platypus import (
 
 title = "Sound Level Monitoring Report"
 author = "Applemon"
-threshold = 100
+thresholds = [85, 100]
 
 
 def parse_timestamp(d):
@@ -117,7 +117,8 @@ def generate_noise_report(files):
             (line2,) = ax.plot_date(df['timestamp'], df['leq'], fmt='g-',
                                     linewidth=5, alpha=0.7)
             line2.set_label("Leq")
-            ax.axhline(threshold, color='r', linestyle='--')
+            for threshold in thresholds:
+                ax.axhline(threshold, color='r', linestyle='--')
             ax.xaxis.set_major_formatter(DateFormatter('%H:%M'))
             ax.legend(loc='upper right', framealpha=0)
 
