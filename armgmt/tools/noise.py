@@ -118,7 +118,7 @@ def generate_noise_report(files):
                                     linewidth=5, alpha=0.7)
             line2.set_label("Leq")
             for threshold in thresholds:
-                ax.axhline(threshold, color='r', linestyle='--')
+                ax.axhline(threshold, color='r', linestyle='--', alpha=0)
             ax.xaxis.set_major_formatter(DateFormatter('%H:%M'))
             ax.legend(loc='upper right', framealpha=0)
 
