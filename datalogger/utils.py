@@ -69,10 +69,12 @@ def write_data(hologram_message):
     influxdb_client.write_points(points, time_precision='s')
 
 
-def sync_hologram_messages(datalogger_sn, limit=100, timestart=0):
+def sync_hologram_messages(datalogger_sn, limit=10000, timestart=0,
+                           timeend=2147483647):
     hologram_device_id = get_hologram_device_id(datalogger_sn)
     messages = get_hologram_messages(
         deviceid=hologram_device_id, limit=limit, timestart=timestart,
+        timeend=timeend,
     )
     for message in messages:
         try:
