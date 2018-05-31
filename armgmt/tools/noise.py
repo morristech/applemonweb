@@ -55,7 +55,7 @@ def generate_noise_report(files):
         doc.title = title
         doc.author = author
         styles = getSampleStyleSheet()
-        max_date = None
+        min_date = None
         story = []
 
         for filename in sound_logs:
@@ -66,9 +66,9 @@ def generate_noise_report(files):
                              names=['timestamp', 'level', 'unit'],
                              parse_dates=['timestamp'],
                              date_parser=parse_timestamp, engine='python')
-            date = df['timestamp'].max().date()
-            if not max_date or date > max_date:
-                max_date = date
+            date = df['timestamp'].min().date()
+            if not min_date or date < min_date:
+                min_date = date
             unit = df['unit'].iloc[0]
             assert unit in ['dBA', 'dBC'], \
                 "Sound must be measured in A/C-weighted decibels (dBA or dBC)."
@@ -141,8 +141,8 @@ def generate_noise_report(files):
     finally:
         os.remove(report_filename)
         os.remove(assembled_filename)
-    if max_date:
-        filename = 'noise_{}.pdf'.format(max_date)
+    if min_date:
+        filename = 'noise_{}.pdf'.format(min_date)
     else:
         filename = 'noise.pdf'
     return (pdf, filename)
