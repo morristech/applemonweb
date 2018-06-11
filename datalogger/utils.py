@@ -47,7 +47,6 @@ def write_data(hologram_message):
             },
             'time': epoch,
         })
-        seq += 1
 
     datalogger_point = {
         'measurement': 'dataloggers',
