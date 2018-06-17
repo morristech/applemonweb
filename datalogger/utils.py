@@ -80,3 +80,42 @@ def sync_hologram_messages(datalogger_sn, limit=10000, timestart=0,
             write_data(message)
         except Exception as e:
             print(e)
+
+
+def recalculate_data(datalogger_sn, seq, timestart=0, timeend=2147483647):
+    sensor = Sensor.objects.get(datalogger__sn=datalogger_sn, seq=seq)
+    query = """
+        SELECT *
+        FROM sensors
+        WHERE
+            dl_sn = '{datalogger_sn}' AND seq = '{seq:d}' AND
+            client = '{client}' AND site = '{site}' AND label = '{label}' AND
+            time >= {timestart:d}s AND time <= {timeend:d}s
+    """.format(
+        datalogger_sn=datalogger_sn, seq=seq,
+        client=sensor.client, site=sensor.site, label=sensor.label,
+        timestart=timestart, timeend=timeend,
+    )
+    old_points = influxdb_client.query(query, epoch='s').get_points()
+    new_points = []
+    for point in old_points:
+        assert 'cal_m' in point
+        point['cal_m'] = sensor.cal_m
+        assert 'cal_b' in point
+        point['cal_b'] = sensor.cal_b
+        assert 'value' in point
+        point['value'] = sensor.calculate(point['raw'])
+        # Assume all strings are tags and all fields are floats.
+        new_points.append({
+            'measurement': 'sensors',
+            'tags': {
+                k: v for k, v in point.items()
+                if isinstance(v, str)
+            },
+            'fields': {
+                k: float(v) for k, v in point.items()
+                if not isinstance(v, str) and k != 'time'
+            },
+            'time': point['time'],
+        })
+    influxdb_client.write_points(new_points, time_precision='s')
