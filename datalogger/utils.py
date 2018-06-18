@@ -55,6 +55,7 @@ def write_data(hologram_message):
         },
         'fields': {
             'delay': int(hologram_message['timestamp']) - decdata['time'],
+            'readings': len(decdata['sensors']),
             'uptime': decdata['time'] - decdata['boot'],
         },
         'time': decdata['time'],
