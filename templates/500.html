@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load raven %}
+
+{% block title %}500 Internal Server Error{% endblock %}
+
+{% block content %}
+<h1>500 Internal Server Error</h1>
+<p>Our team has been notified.</p>
+
+{% if request.sentry.id %}
+  <p>Error ID: {{ request.sentry.id }}</p>
+  <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js"></script>
+  <script>
+  Raven.showReportDialog({
+    eventId: '{{ request.sentry.id }}',
+    dsn: '{% sentry_public_dsn %}'
+  });
+  </script>
+{% endif %}
+{% endblock %}
