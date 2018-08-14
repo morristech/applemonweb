@@ -23,6 +23,8 @@ if 'DEBUG' in SECRETS and SECRETS['DEBUG']:
 else:
     ALLOWED_HOSTS = ['.applemon.com']
     sentry_env = 'prod'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 RAVEN_CONFIG = {
     'dsn': SECRETS['SENTRY_DSN'],
