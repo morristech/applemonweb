@@ -1,8 +1,7 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-env/
+/env/
 
 *~
-data/
-static/
+/data/
