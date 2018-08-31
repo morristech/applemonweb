@@ -4,7 +4,7 @@ django-formtools
 django-localflavor>=2.0
 django-mass-edit>=3.1
 django-phonenumber-field>=2.0.0
--e git+https://github.com/groveco/django-sql-explorer.git@cfdc88c7ad41adbdaaab848884ea38830d8a0590#egg=django-sql-explorer
+django-sql-explorer>=1.1.2
 gunicorn
 influxdb
 matplotlib
