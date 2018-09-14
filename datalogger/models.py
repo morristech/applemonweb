@@ -41,7 +41,9 @@ class Sensor(models.Model):
     cal_m = models.FloatField(null=True, blank=True)
     cal_b = models.FloatField(null=True, blank=True)
     notes = models.TextField(blank=True)
-    datalogger = models.ForeignKey(Datalogger, on_delete=models.CASCADE)
+    datalogger = models.ForeignKey(
+        Datalogger, null=True, blank=True, on_delete=models.CASCADE
+    )
     seq = models.PositiveSmallIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
