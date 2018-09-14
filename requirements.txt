@@ -8,7 +8,7 @@ babel==2.6.0              # via django-phonenumber-field
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 cycler==0.10.0            # via matplotlib
-django-autocomplete-light==3.3.0
+django-autocomplete-light==3.3.1
 django-formtools==2.1
 django-localflavor==2.1
 django-mass-edit==3.2.0
@@ -22,7 +22,7 @@ kiwisolver==1.0.1         # via matplotlib
 matplotlib==2.2.3
 numpy==1.15.1
 pandas==0.23.4
-phonenumbers==8.9.12      # via django-phonenumber-field
+phonenumbers==8.9.13      # via django-phonenumber-field
 pillow==5.2.0             # via reportlab
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.7.3    # via influxdb, matplotlib, pandas
