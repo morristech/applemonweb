@@ -8,30 +8,30 @@ babel==2.6.0              # via django-phonenumber-field
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
 cycler==0.10.0            # via matplotlib
-django-autocomplete-light==3.3.1
+django-autocomplete-light==3.3.2
 django-formtools==2.1
 django-localflavor==2.1
 django-mass-edit==3.2.0
 django-phonenumber-field==2.0.1
 django-sql-explorer==1.1.2
-django==2.0.8
+django==2.0.9
 gunicorn==19.9.0
 idna==2.7                 # via requests
 influxdb==5.2.0
 kiwisolver==1.0.1         # via matplotlib
-matplotlib==2.2.3
-numpy==1.15.1
+matplotlib==3.0.0
+numpy==1.15.2
 pandas==0.23.4
-phonenumbers==8.9.13      # via django-phonenumber-field
-pillow==5.2.0             # via reportlab
-pyparsing==2.2.0          # via matplotlib
+phonenumbers==8.9.14      # via django-phonenumber-field
+pillow==5.3.0             # via reportlab
+pyparsing==2.2.2          # via matplotlib
 python-dateutil==2.7.3    # via influxdb, matplotlib, pandas
 python-usps2==0.2.0
-pytz==2018.5              # via babel, django, influxdb, matplotlib, pandas
+pytz==2018.5              # via babel, django, influxdb, pandas
 raven==6.9.0
-reportlab==3.5.6
+reportlab==3.5.8
 requests==2.19.1          # via influxdb
-six==1.11.0               # via cycler, django-sql-explorer, influxdb, matplotlib, python-dateutil
+six==1.11.0               # via cycler, django-sql-explorer, influxdb, python-dateutil
 sqlparse==0.2.4           # via django-sql-explorer
 unicodecsv==0.14.1        # via django-sql-explorer
 urllib3==1.23             # via requests
