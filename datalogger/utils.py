@@ -54,12 +54,14 @@ def write_data(hologram_message):
             'sn': datalogger_sn,
         },
         'fields': {
-            'delay': int(hologram_message['timestamp']) - decdata['time'],
             'readings': len(decdata['sensors']),
             'uptime': decdata['time'] - decdata['boot'],
         },
         'time': decdata['time'],
     }
+    if 'timestamp' in hologram_message:
+        datalogger_point['fields']['delay'] = \
+            int(hologram_message['timestamp']) - decdata['time']
     for tag in datalogger_tag_names:
         datalogger_point['tags'][tag] = decdata[tag]
     for field in datalogger_field_names:
