@@ -10,7 +10,10 @@ from datalogger.hologram_api import (get_hologram_device_id,
 
 influxdb_client = InfluxDBClient(database='sensordata')
 datalogger_field_names = [
-    'batt_mv', 'batt_pct', 'boot', 'cell_rssi', 'rh', 'temp',
+    'batt_mv', 'batt_pct', 'boot', 'cell_rssi',
+]
+datalogger_field_names_optional = [
+    'rh', 'temp',
 ]
 datalogger_tag_names = [
     'batt_stat', 'cell_stat', 'cell_op', 'v', 'v_boot', 'v_sys',
@@ -66,6 +69,9 @@ def write_data(hologram_message):
         datalogger_point['tags'][tag] = decdata[tag]
     for field in datalogger_field_names:
         datalogger_point['fields'][field] = decdata[field]
+    for field in datalogger_field_names_optional:
+        if field in decdata:
+            datalogger_point['fields'][field] = decdata[field]
     points.append(datalogger_point)
 
     influxdb_client.write_points(points, time_precision='s')
