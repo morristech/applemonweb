@@ -16,7 +16,7 @@ class DataloggerAdmin(admin.ModelAdmin):
 
 @admin.register(Sensor)
 class SensorAdmin(admin.ModelAdmin):
-    date_hierarchy = 'updated_at'
+    date_hierarchy = 'created_at'
     list_display = ['active', 'name', 'cal_m', 'cal_b', 'datalogger', 'seq']
     list_display_links = ['name']
     list_filter = ['active', 'client', 'site']
