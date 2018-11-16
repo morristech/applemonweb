@@ -17,8 +17,8 @@ class DataloggerAdmin(admin.ModelAdmin):
 @admin.register(Sensor)
 class SensorAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated_at'
-    list_display = ['name', 'cal_m', 'cal_b', 'datalogger', 'seq']
+    list_display = ['active', 'name', 'cal_m', 'cal_b', 'datalogger', 'seq']
     list_display_links = ['name']
-    list_filter = ['client', 'site']
+    list_filter = ['active', 'client', 'site']
     readonly_fields = ['seq', 'created_at', 'updated_at']
     search_fields = ['client', 'site', 'label', 'notes', 'datalogger__sn']

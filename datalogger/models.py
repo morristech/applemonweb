@@ -77,7 +77,7 @@ class Sensor(models.Model):
         return self.name()
 
     class Meta:
-        ordering = ['client', 'site', 'label']
+        ordering = ['-active', 'client', 'site', 'label']
         unique_together = (
             ('client', 'site', 'label'),
             ('datalogger', 'seq'),
