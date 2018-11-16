@@ -7,8 +7,8 @@ from datalogger.hologram_api import (get_hologram_device_id,
 
 class Datalogger(models.Model):
     """Datalogger configuration"""
-    sn = models.SlugField()
-    hologram_id = models.SlugField()
+    sn = models.SlugField(unique=True)
+    hologram_id = models.SlugField(unique=True)
 
     def get_absolute_url(self):
         return get_hologram_device_url(self.hologram_id)
