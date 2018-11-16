@@ -53,8 +53,6 @@ class Sensor(models.Model):
         return "{}-{}-{}".format(self.client, self.site, self.label)
 
     def calculate(self, raw):
-        if self.cal_m is None or self.cal_b is None:
-            return None
         return self.cal_m * raw + self.cal_b
 
     def clean(self):
@@ -65,6 +63,15 @@ class Sensor(models.Model):
             if seq_max is None:
                 seq_max = -1
             self.seq = seq_max + 1
+        if self.active and (self.cal_m is None or self.cal_b is None):
+            raise ValidationError(
+                "Calibration values cannot be empty if active."
+            )
+        if self.active and self.datalogger is None:
+            raise ValidationError(
+                "Datalogger field cannot be empty if active."
+            )
+        self.validate_unique()
 
     def __str__(self):
         return self.name()
