@@ -44,6 +44,7 @@ class Sensor(models.Model):
     datalogger = models.ForeignKey(
         Datalogger, null=True, blank=True, on_delete=models.CASCADE
     )
+    active = models.BooleanField(default=True)
     seq = models.PositiveSmallIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -32,6 +32,8 @@ def write_data(hologram_message):
     seq = 0
     for (epoch, raw, raw_sd) in decdata['sensors']:
         sensor = Sensor.objects.get(datalogger__sn=datalogger_sn, seq=seq)
+        if not sensor.active:
+            continue
         points.append({
             'measurement': 'sensors',
             'tags': {
