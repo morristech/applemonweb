@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 babel==2.6.0              # via django-phonenumber-field
-certifi==2018.10.15       # via requests
+certifi==2018.11.29       # via requests
 chardet==3.0.4            # via requests
 cycler==0.10.0            # via matplotlib
 django-autocomplete-light==3.3.2
@@ -14,23 +14,23 @@ django-localflavor==2.1
 django-mass-edit==3.2.0
 django-phonenumber-field==2.1.0
 django-sql-explorer==1.1.2
-django==2.0.9
+django==2.0.10
 gunicorn==19.9.0
-idna==2.7                 # via requests
-influxdb==5.2.0
+idna==2.8                 # via requests
+influxdb==5.2.1
 kiwisolver==1.0.1         # via matplotlib
 matplotlib==3.0.2
-numpy==1.15.4
+numpy==1.16.0
 pandas==0.23.4
-pillow==5.3.0             # via reportlab
-pyparsing==2.3.0          # via matplotlib
+pillow==5.4.1             # via reportlab
+pyparsing==2.3.1          # via matplotlib
 python-dateutil==2.7.5    # via influxdb, matplotlib, pandas
 python-usps2==0.2.0
-pytz==2018.7              # via babel, django, influxdb, pandas
-raven==6.9.0
-reportlab==3.5.10
-requests==2.20.1          # via influxdb
-six==1.11.0               # via cycler, django-sql-explorer, influxdb, python-dateutil
+pytz==2018.9              # via babel, django, influxdb, pandas
+raven==6.10.0
+reportlab==3.5.12
+requests==2.21.0          # via influxdb
+six==1.12.0               # via cycler, django-sql-explorer, influxdb, python-dateutil
 sqlparse==0.2.4           # via django-sql-explorer
 unicodecsv==0.14.1        # via django-sql-explorer
 urllib3==1.24.1           # via requests
